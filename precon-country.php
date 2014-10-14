@@ -11,13 +11,13 @@
 
 add_action( 'init', 'precon_country_init' );
 //add_action( 'save_post', 'precon_q_save_Country', 10, 2 );
-add_action( 'save_post', 'precon_country_save_meta', 10, 2 );
+add_action( 'save_post_country', 'precon_country_save_meta', 10, 2 );
 
 
 function precon_country_init() {
 	$labels = array(
-		'name'               => _x( 'country', 'post type general name', 'precon-ountry' ),
-		'singular_name'      => _x( 'country', 'post type singular name', 'precon-Country' ),
+		'name'               => _x( 'Country', 'post type general name', 'precon-ountry' ),
+		'singular_name'      => _x( 'Country', 'post type singular name', 'precon-Country' ),
 		'menu_name'          => _x( 'Countries', 'admin menu', 'precon-Country' ),
 		'name_admin_bar'     => _x( 'Countries', 'add new on admin bar', 'precon-Country' ),
 		'add_new'            => _x( 'Add New', 'Country', 'precon-Country' ),
@@ -44,6 +44,7 @@ function precon_country_init() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => null,
+		'menu_icon'			 => 'dashicons-admin-site',
 		'supports'           => array( 'title', 'editor', 'thumbnail', 'tags', 'page-attributes'),
 		'register_meta_box_cb' => 'add_country_metaboxes',
 		'taxonomies' => array( 'post_tag', 'category'), 
@@ -86,58 +87,60 @@ function precon_policy_risk_box( $object, $box ) { ?>
 <?php }
 
 function precon_country_save_meta( $post_id, $post ) {
-
-	if ( !wp_verify_nonce( $_POST['events_box_nonce'], plugin_basename( __FILE__ ) ) )
-		return $post_id;
-
-	if ( !wp_verify_nonce( $_POST['key_risks_nonce'], plugin_basename( __FILE__ ) ) )
-		return $post_id;
-
-	if ( !wp_verify_nonce( $_POST['policy_risks_nonce'], plugin_basename( __FILE__ ) ) )
-		return $post_id;
-
 	if ( !current_user_can( 'edit_post', $post_id ) )
+			return $post_id;
+
+	if ( !wp_verify_nonce( $_POST['events_box_nonce'], plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
+	} else {
+		$meta_value = get_post_meta( $post_id, 'events', true );
+		$new_meta_value = stripslashes( $_POST['events'] );
 
-	$meta_value = get_post_meta( $post_id, 'events', true );
-	$new_meta_value = stripslashes( $_POST['events'] );
+		if ( $new_meta_value && '' == $meta_value )
+			add_post_meta( $post_id, 'events', $new_meta_value, true );
 
-	if ( $new_meta_value && '' == $meta_value )
-		add_post_meta( $post_id, 'events', $new_meta_value, true );
+		elseif ( $new_meta_value != $meta_value )
+			update_post_meta( $post_id, 'events', $new_meta_value );
 
-	elseif ( $new_meta_value != $meta_value )
-		update_post_meta( $post_id, 'events', $new_meta_value );
+		elseif ( '' == $new_meta_value && $meta_value )
+			delete_post_meta( $post_id, 'events', $meta_value );
+	}
+	
 
-	elseif ( '' == $new_meta_value && $meta_value )
-		delete_post_meta( $post_id, 'events', $meta_value );
+	if ( !wp_verify_nonce( $_POST['key_risks_nonce'], plugin_basename( __FILE__ ) ) ) {
+		return $post_id;
+	} else {
+		$meta_value = get_post_meta( $post_id, 'key_risks', true );
+		$new_meta_value = stripslashes( $_POST['key_risks'] );
+
+		if ( $new_meta_value && '' == $meta_value )
+			add_post_meta( $post_id, 'key_risks', $new_meta_value, true );
+
+		elseif ( $new_meta_value != $meta_value )
+			update_post_meta( $post_id, 'key_risks', $new_meta_value );
+
+		elseif ( '' == $new_meta_value && $meta_value )
+			delete_post_meta( $post_id, 'key_risks', $meta_value );
+	}
+		
+
+	if ( !wp_verify_nonce( $_POST['policy_risks_nonce'], plugin_basename( __FILE__ ) ) ) {
+		return $post_id;
+	} else {
+		$meta_value = get_post_meta( $post_id, 'policy_risks', true );
+		$new_meta_value = stripslashes( $_POST['policy_risks'] );
+
+		if ( $new_meta_value && '' == $meta_value )
+			add_post_meta( $post_id, 'policy_risks', $new_meta_value, true );
+
+		elseif ( $new_meta_value != $meta_value )
+			update_post_meta( $post_id, 'policy_risks', $new_meta_value );
+
+		elseif ( '' == $new_meta_value && $meta_value )
+			delete_post_meta( $post_id, 'policy_risks', $meta_value );
+	}
 
 
-
-	$meta_value = get_post_meta( $post_id, 'key_risks', true );
-	$new_meta_value = stripslashes( $_POST['key_risks'] );
-
-	if ( $new_meta_value && '' == $meta_value )
-		add_post_meta( $post_id, 'key_risks', $new_meta_value, true );
-
-	elseif ( $new_meta_value != $meta_value )
-		update_post_meta( $post_id, 'key_risks', $new_meta_value );
-
-	elseif ( '' == $new_meta_value && $meta_value )
-		delete_post_meta( $post_id, 'key_risks', $meta_value );
-
-
-
-	$meta_value = get_post_meta( $post_id, 'policy_risks', true );
-	$new_meta_value = stripslashes( $_POST['policy_risks'] );
-
-	if ( $new_meta_value && '' == $meta_value )
-		add_post_meta( $post_id, 'policy_risks', $new_meta_value, true );
-
-	elseif ( $new_meta_value != $meta_value )
-		update_post_meta( $post_id, 'policy_risks', $new_meta_value );
-
-	elseif ( '' == $new_meta_value && $meta_value )
-		delete_post_meta( $post_id, 'policy_risks', $meta_value );
 }
 
 
