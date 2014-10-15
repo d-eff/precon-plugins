@@ -58,6 +58,98 @@ function add_forecasts_metaboxes() {
   	add_meta_box('Community', 'Community Analytics', 'precon_community_box', 'forecast', 'normal', 'default');
 }
 
+function house_form($amount) {
+	echo 
+	'<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
+   
+    <label for="amount">Vote</label>
+   	<select name="amount">
+   		<option value="100">100%</option>
+   		<option value="95">95%</option>
+   		<option value="90">90%</option>
+   		<option value="85">85%</option>
+   		<option value="80">80%</option>
+   		<option value="75">75%</option>
+   		<option value="70">70%</option>
+   		<option value="65">65%</option>
+   		<option value="60">60%</option>
+   		<option value="55">55%</option>
+   		<option value="50">50%</option>
+   		<option value="45">45%</option>
+   		<option value="40">40%</option>
+   		<option value="35">35%</option>
+   		<option value="30">30%</option>
+   		<option value="25">25%</option>
+   		<option value="20">20%</option>
+   		<option value="15">15%</option>
+   		<option value="10">10%</option>
+   		<option value="5">5%</option>
+   		<option value="0">0%</option>
+   	</select>
+   		<input type="submit" name="submit" value="Vote"/>
+    </form>';
+}
+
+function house_validation($amount) {
+	global $reg_errors;
+	$reg_errors = new WP_Error;
+
+	if(empty($amount)) {
+		$reg_errors->add('field', 'Required field missing');
+	}
+}
+
+function complete_voting($amount, $tid) {
+	global $reg_errors, $amount;
+	if(count($reg_errors->get_error_messages()) < 1) {
+		$data = array('vote' => $amount);
+	}
+
+
+	echo 'complete_voting ' . $amount . ' ' . $tid . "\n";
+
+
+	$meta_value = get_post_meta( $tid, 'vote', true );
+	$new_meta_value = stripslashes( $amount );
+
+	if ( $new_meta_value && '' == $meta_value ) {
+		add_post_meta( $tid, 'vote', $new_meta_value, true );
+	} elseif ( $new_meta_value != $meta_value ) {
+		$new_meta_value += $meta_value;
+		update_post_meta( $tid, 'vote', $new_meta_value );
+	} elseif ( '' == $new_meta_value && $meta_value ) {
+		delete_post_meta( $tid, 'vote', $meta_value );
+	}		
+
+	echo get_post_meta( $tid, 'vote', true ) . " stuff";
+
+}
+
+function custom_vote_function($tid) {
+	global $amount;	
+	var_dump($_POST);
+
+	if ( isset($_POST['submit'] ) ) {
+
+		house_validation($_POST['amount']);
+
+		
+		$amount = $_POST['amount'];
+
+		complete_voting($amount, $tid);
+
+	}
+	house_form($amount);
+}
+
+add_shortcode( 'pr_vote', 'pr_vote_shortcode' );
+ 
+// The callback function that will replace [book]
+function pr_vote_shortcode() {
+    ob_start();
+    custom_vote_function();
+    return ob_get_clean();
+}
 
 function precon_house_box( $object, $box ) { ?>
 	<p>
