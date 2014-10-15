@@ -87,6 +87,7 @@ function house_form($amount) {
    		<option value="0">0%</option>
    	</select>
    		<input type="submit" name="submit" value="Vote"/>
+   		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
     </form>';
 }
 
@@ -99,45 +100,45 @@ function house_validation($amount) {
 	}
 }
 
-function complete_voting($amount, $tid) {
+function complete_voting($amount, $tid, $user_level, $time) {
 	global $reg_errors, $amount;
 	if(count($reg_errors->get_error_messages()) < 1) {
 		$data = array('vote' => $amount);
 	}
 
-
-	echo 'complete_voting ' . $amount . ' ' . $tid . "\n";
-
-
 	$meta_value = get_post_meta( $tid, 'vote', true );
 	$new_meta_value = stripslashes( $amount );
+	echo 'meta ' . $meta_value . ' new ' . $new_meta_value . ' ' . $tid;
+
 
 	if ( $new_meta_value && '' == $meta_value ) {
 		add_post_meta( $tid, 'vote', $new_meta_value, true );
+		echo 'oo';
 	} elseif ( $new_meta_value != $meta_value ) {
 		$new_meta_value += $meta_value;
 		update_post_meta( $tid, 'vote', $new_meta_value );
+		echo 'ao';
 	} elseif ( '' == $new_meta_value && $meta_value ) {
 		delete_post_meta( $tid, 'vote', $meta_value );
+		echo 'vo';
 	}		
 
-	echo get_post_meta( $tid, 'vote', true ) . " stuff";
 
 }
 
-function custom_vote_function($tid) {
+function custom_vote_function($tid, $user_level, $time) {
 	global $amount;	
-	var_dump($_POST);
+
 
 	if ( isset($_POST['submit'] ) ) {
-
-		house_validation($_POST['amount']);
-
+	
+	
+			house_validation($_POST['amount']);
 		
-		$amount = $_POST['amount'];
+			$amount = $_POST['amount'];
 
-		complete_voting($amount, $tid);
-
+			complete_voting($amount, $tid, $user_level, $time);
+		
 	}
 	house_form($amount);
 }
