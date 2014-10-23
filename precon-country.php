@@ -16,7 +16,7 @@ add_action( 'save_post_country', 'precon_country_save_meta', 10, 2 );
 
 function precon_country_init() {
 	$labels = array(
-		'name'               => _x( 'Country', 'post type general name', 'precon-ountry' ),
+		'name'               => _x( 'Country', 'post type general name', 'precon-Country' ),
 		'singular_name'      => _x( 'Country', 'post type singular name', 'precon-Country' ),
 		'menu_name'          => _x( 'Countries', 'admin menu', 'precon-Country' ),
 		'name_admin_bar'     => _x( 'Countries', 'add new on admin bar', 'precon-Country' ),
