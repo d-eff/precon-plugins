@@ -131,9 +131,8 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 		update_post_meta($tid, 'lastTime', $lastTime);
 		update_post_meta($tid, 'voteCount', $vote_count);
 	} elseif ($difference >= 60) {
-		echo 'diff' . $difference;
 		for($x = $lastTime + 60; $x < $timeStamp; $x += 60) {
-			$vote_arr[strval($x)] = $vote_arr[strval($lastTime)];
+			$vote_arr[strval($x)] = 50;
 			$vote_count[strval($x)] = 1;
 		}
 		$lastTime = $timeStamp - ($difference % 60);
@@ -143,6 +142,9 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 		update_post_meta($tid, 'lastTime', $lastTime);
 		update_post_meta($tid, 'voteCount', $vote_count);
 	}
+
+	//echo var_dump($vote_arr) . ' ';
+	//echo var_dump($vote_count) . ' ';
 
 	$_POST['amount'] = '--';
 
@@ -169,7 +171,7 @@ function custom_vote_function($tid, $user_level, $intime) {
 
 add_shortcode( 'pr_vote', 'pr_vote_shortcode' );
  
-// The callback function that will replace [book]
+// The callback function that will replace [pr_vote]
 function pr_vote_shortcode() {
     ob_start();
     custom_vote_function();
@@ -259,3 +261,30 @@ function precon_q_save_forecast( $post_id, $post ) {
 		
 
 }
+
+function getData($tid) {
+	$vote_arr = get_post_meta($tid, 'voteArray', true);
+	$vote_count = get_post_meta($tid, 'voteCount', true);
+
+	if(!empty($vote_count) && !empty($vote_arr)) {
+
+		foreach($vote_arr as $key => $value) {
+			echo $value / $vote_count[$key] . " ";
+		}
+
+	}
+
+}
+
+function my_scripts_method() {
+	wp_enqueue_script(
+		'forecast',
+		plugins_url( '/forecast.js' , __FILE__ )
+	);
+}
+
+add_action( 'init', 'my_scripts_method' );
+
+
+
+
