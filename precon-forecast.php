@@ -107,60 +107,43 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 		$data = array('vote' => $amount);
 	}
 
-//	$meta_value = get_post_meta( $tid, 'vote', true );
 	$new_meta_value = intval(stripslashes( $amount ));
-	
-	/*
-	if ( $new_meta_value && '' == $meta_value ) {
-		add_post_meta( $tid, 'vote', $new_meta_value, true );
-	} elseif ( $new_meta_value != $meta_value ) {
-		$new_meta_value += $meta_value;
-		update_post_meta( $tid, 'vote', $new_meta_value );
-	} elseif ( '' == $new_meta_value && $meta_value ) {
-		delete_post_meta( $tid, 'vote', $meta_value );
-	}		
-*/
-
-//delete_post_meta( $tid, 'voteArray' );
-//delete_post_meta( $tid, 'lastTime');
-
-//echo var_dump(get_post_meta( $tid, 'voteArray', false )) . " votes";
-//echo get_post_meta( $tid, 'lastTime', true ) . " last";
 
 	$lastTime = intval(get_post_meta($tid, 'lastTime', true));
 	$vote_arr = get_post_meta($tid, 'voteArray', true);
-//	delete_post_meta( $tid, 'voteArray' );
-//	delete_post_meta( $tid, 'lastTime');
+	$vote_count = get_post_meta($tid, 'voteCount', true);
 
 	$timeStamp = current_time('timestamp');
 	$difference = $timeStamp - $lastTime;
 
-	echo $timeStamp . " " . $lastTime . " " . $difference;
 		
-	if(empty($lastTime) || empty($vote_arr)) {
+	if(empty($lastTime) || empty($vote_arr) || empty($vote_count)) {
 		$lastTime = $intime;
 		$vote_arr = array(strval($lastTime) => $new_meta_value);
+		$vote_count = array(strval($lastTime) => 1);
 		add_post_meta($tid, 'lastTime', $lastTime, true);
 		add_post_meta($tid, 'voteArray', $vote_arr, true);
-	} elseif ($difference < 300) {
+		add_post_meta($tid, 'voteCount', $vote_count, true);
+	} elseif ($difference < 60) {
 		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value;
+		$vote_count[strval($lastTime)] = $vote_count[strval($lastTime)] + 1;
 		update_post_meta($tid, 'voteArray', $vote_arr);
 		update_post_meta($tid, 'lastTime', $lastTime);
-	} elseif ($difference >= 300) {
+		update_post_meta($tid, 'voteCount', $vote_count);
+	} elseif ($difference >= 60) {
 		echo 'diff' . $difference;
-		for($x = $lastTime + 300; $x < $timeStamp; $x += 300) {
+		for($x = $lastTime + 60; $x < $timeStamp; $x += 60) {
 			$vote_arr[strval($x)] = $vote_arr[strval($lastTime)];
+			$vote_count[strval($x)] = 1;
 		}
-		$lastTime = $timeStamp - ($difference % 300);
+		$lastTime = $timeStamp - ($difference % 60);
 		$vote_arr[strval($lastTime)] = $new_meta_value;
+		$vote_count[strval($lastTime)] = 1;
 		update_post_meta($tid, 'voteArray', $vote_arr);
 		update_post_meta($tid, 'lastTime', $lastTime);
+		update_post_meta($tid, 'voteCount', $vote_count);
 	}
 
-
-	echo var_dump(get_post_meta( $tid, 'voteArray', false )) . " votes";
-
-//	echo get_post_meta( $tid, 'lastTime', true ) . " last";
 	$_POST['amount'] = '--';
 
 }
@@ -169,7 +152,7 @@ function custom_vote_function($tid, $user_level, $intime) {
 	global $amount;	
 
 	if(!empty($_POST)) {
-		//var_dump($_POST);
+
 		if ( isset($_POST['submit']) && $_POST['amount'] != '--' ) {
 			
 				house_validation($_POST['amount']);
