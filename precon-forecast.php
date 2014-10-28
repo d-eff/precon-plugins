@@ -162,6 +162,10 @@ function add_forecast_scripts() {
 		'forecast',
 		plugins_url( '/forecast.js' , __FILE__ )
 	);
+	wp_enqueue_script(
+		'd3',
+		'//d3js.org/d3.v3.min.js'
+	);
 }
 
 add_action( 'init', 'add_forecast_scripts' );
