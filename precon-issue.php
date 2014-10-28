@@ -10,7 +10,7 @@
  */
 
 add_action( 'init', 'precon_issue_init' );
-//add_action( 'save_post', 'precon_q_save_issue', 10, 2 );
+add_action( 'save_post_issue', 'precon_q_save_Issue', 10, 2 );
 
 
 function precon_issue_init() {
@@ -43,19 +43,20 @@ function precon_issue_init() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => null,
-		'menu_icon'			 => 'dashicons-schedule',
+		'menu_icon'			 => 'dashicons-chart-line',
 		'supports'           => array( 'title', 'editor', 'thumbnail', 'tags', 'page-attributes'),
-		'register_meta_box_cb' => 'add_issues_metaboxes',
+		'register_meta_box_cb' => 'add_issue_metaboxes',
 		'taxonomies' => array( 'post_tag', 'category'), 
 	);
 
 	register_post_type( 'issue', $args );
 }
 
-function add_issues_metaboxes() {
-
+function add_issue_metaboxes() {
 
 }
 
+function precon_q_save_issue() {
 
-
+	
+}

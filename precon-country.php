@@ -10,7 +10,6 @@
  */
 
 add_action( 'init', 'precon_country_init' );
-//add_action( 'save_post', 'precon_q_save_Country', 10, 2 );
 add_action( 'save_post_country', 'precon_country_save_meta', 10, 2 );
 
 
@@ -50,7 +49,7 @@ function precon_country_init() {
 		'taxonomies' => array( 'post_tag', 'category'), 
 	);
 
-	register_post_type( 'Country', $args );
+	register_post_type( 'country', $args );
 }
 
 function add_country_metaboxes() {

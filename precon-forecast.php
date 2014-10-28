@@ -106,7 +106,7 @@ function complete_voting($amount, $tid, $user_level, $time) {
 		$data = array('vote' => $amount);
 	}
 
-	$meta_value = get_post_meta( $tid, 'vote', true );
+//	$meta_value = get_post_meta( $tid, 'vote', true );
 	$new_meta_value = stripslashes( $amount );
 	
 	/*
@@ -118,31 +118,34 @@ function complete_voting($amount, $tid, $user_level, $time) {
 	} elseif ( '' == $new_meta_value && $meta_value ) {
 		delete_post_meta( $tid, 'vote', $meta_value );
 	}		
-
-
-delete_post_meta( $tid, 'voteArray' );
-delete_post_meta( $tid, 'lastTime');
-
-echo var_dump(get_post_meta( $tid, 'voteArray', false )) . " votes";
-echo get_post_meta( $tid, 'lastTime', true ) . " last";
 */
-	$lastTime = intval(get_post_meta($tid, 'lastTime', true));
 
+//delete_post_meta( $tid, 'voteArray' );
+//delete_post_meta( $tid, 'lastTime');
+
+//echo var_dump(get_post_meta( $tid, 'voteArray', false )) . " votes";
+//echo get_post_meta( $tid, 'lastTime', true ) . " last";
+
+	$lastTime = intval(get_post_meta($tid, 'lastTime', true));
 	$vote_arr = get_post_meta($tid, 'voteArray', false);
 
 
 	$timeStamp = current_time('timestamp');
-	echo $timeStamp . " " . $lastTime;
+	echo $timeStamp . " " . $lastTime . " ";
 	$difference = $timeStamp - $lastTime;
-	
+	echo $difference . " ";
 	if(empty($lastTime) || empty($vote_arr)) {
 		echo 'first';
 		$lastTime = $time;
 		$vote_arr = array(strval($lastTime) => $new_meta_value);
+		add_post_meta($tid, 'lastTime', $lastTime, true);
+		add_post_meta($tid, 'voteArray', $vote_arr, true);
 	} elseif ($difference < 86400) {
 		echo 'two';
 		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value;
-	} elseif ($difference >= 86400) {
+		echo strval($lastTime) . "time";
+		update_post_meta($tid, 'voteArray', $vote_arr);
+	}/* elseif ($difference >= 86400) {
 		echo 'diff' . $difference;
 		for($x = $lastTime + 86400; $x < $timeStamp; $x += 86400) {
 			$vote_arr[strval($x)] = $vote_array[strval($lastTime)];
@@ -150,16 +153,10 @@ echo get_post_meta( $tid, 'lastTime', true ) . " last";
 		$lastTime = $timeStamp - ($difference % 86400);
 		$vote_array[strval($lastTime)] = $new_meta_value;
 	}
-delete_post_meta( $tid, 'voteArray' );
-delete_post_meta( $tid, 'lastTime');
-
-	add_post_meta($tid, 'lastTime', $lastTime);
-	add_post_meta($tid, 'voteArray', $vote_arr);
-
+*/
 	echo var_dump(get_post_meta( $tid, 'voteArray', false )) . " votes";
 
-	echo get_post_meta( $tid, 'lastTime', true ) . " last";
-
+//	echo get_post_meta( $tid, 'lastTime', true ) . " last";
 
 
 }
