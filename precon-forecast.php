@@ -64,6 +64,7 @@ function house_form($amount) {
    
     <label for="amount">Vote</label>
    	<select name="amount">
+   		<option value="--">--</option>
    		<option value="100">100%</option>
    		<option value="95">95%</option>
    		<option value="90">90%</option>
@@ -100,14 +101,14 @@ function house_validation($amount) {
 	}
 }
 
-function complete_voting($amount, $tid, $user_level, $time) {
+function complete_voting($amount, $tid, $user_level, $intime) {
 	global $reg_errors, $amount;
 	if(count($reg_errors->get_error_messages()) < 1) {
 		$data = array('vote' => $amount);
 	}
 
 //	$meta_value = get_post_meta( $tid, 'vote', true );
-	$new_meta_value = stripslashes( $amount );
+	$new_meta_value = intval(stripslashes( $amount ));
 	
 	/*
 	if ( $new_meta_value && '' == $meta_value ) {
@@ -127,25 +128,25 @@ function complete_voting($amount, $tid, $user_level, $time) {
 //echo get_post_meta( $tid, 'lastTime', true ) . " last";
 
 	$lastTime = intval(get_post_meta($tid, 'lastTime', true));
-	$vote_arr = get_post_meta($tid, 'voteArray', false);
-
+	$vote_arr = get_post_meta($tid, 'voteArray', true);
+//	delete_post_meta( $tid, 'voteArray' );
+//	delete_post_meta( $tid, 'lastTime');
 
 	$timeStamp = current_time('timestamp');
-	echo $timeStamp . " " . $lastTime . " ";
 	$difference = $timeStamp - $lastTime;
-	echo $difference . " ";
+
+	echo $timeStamp . " " . $lastTime . " " . $difference;
+		
 	if(empty($lastTime) || empty($vote_arr)) {
-		echo 'first';
-		$lastTime = $time;
+		$lastTime = $intime;
 		$vote_arr = array(strval($lastTime) => $new_meta_value);
 		add_post_meta($tid, 'lastTime', $lastTime, true);
 		add_post_meta($tid, 'voteArray', $vote_arr, true);
 	} elseif ($difference < 86400) {
-		echo 'two';
 		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value;
-		echo strval($lastTime) . "time";
 		update_post_meta($tid, 'voteArray', $vote_arr);
-	}/* elseif ($difference >= 86400) {
+		update_post_meta($tid, 'lastTime', $lastTime);
+	} elseif ($difference >= 86400) {
 		echo 'diff' . $difference;
 		for($x = $lastTime + 86400; $x < $timeStamp; $x += 86400) {
 			$vote_arr[strval($x)] = $vote_array[strval($lastTime)];
@@ -153,29 +154,32 @@ function complete_voting($amount, $tid, $user_level, $time) {
 		$lastTime = $timeStamp - ($difference % 86400);
 		$vote_array[strval($lastTime)] = $new_meta_value;
 	}
-*/
+
+
 	echo var_dump(get_post_meta( $tid, 'voteArray', false )) . " votes";
 
 //	echo get_post_meta( $tid, 'lastTime', true ) . " last";
-
+	$_POST['amount'] = '--';
 
 }
 
-function custom_vote_function($tid, $user_level, $time) {
+function custom_vote_function($tid, $user_level, $intime) {
 	global $amount;	
 
+	if(!empty($_POST)) {
+		//var_dump($_POST);
+		if ( isset($_POST['submit']) && $_POST['amount'] != '--' ) {
+			
+				house_validation($_POST['amount']);
+			
+				$amount = $_POST['amount'];
 
-	if ( isset($_POST['submit'] ) ) {
-	
-	
-			house_validation($_POST['amount']);
-		
-			$amount = $_POST['amount'];
-
-			complete_voting($amount, $tid, $user_level, $time);
-		
+				complete_voting($amount, $tid, $user_level, $intime);
+			
+		}
 	}
 	house_form($amount);
+	
 }
 
 add_shortcode( 'pr_vote', 'pr_vote_shortcode' );
@@ -191,7 +195,7 @@ function precon_house_box( $object, $box ) { ?>
 	<p>
 		<label for="house">House Analysis</label>
 		<br />
-		<textarea name="house" id="house" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo wp_specialchars( get_post_meta( $object->ID, 'House', true ), 1 ); ?></textarea>
+		<textarea name="house" id="house" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'House', true ), 1 ); ?></textarea>
 		<input type="hidden" name="house_box_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 	</p>
 <?php }
@@ -199,7 +203,7 @@ function precon_expert_box( $object, $box ) { ?>
 	<p>
 		<label for="expert">Expert Analysis</label>
 		<br />
-		<textarea name="expert" id="expert" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo wp_specialchars( get_post_meta( $object->ID, 'Expert', true ), 1 ); ?></textarea>
+		<textarea name="expert" id="expert" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'Expert', true ), 1 ); ?></textarea>
 		<input type="hidden" name="expert_box_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 	</p>
 <?php }
@@ -207,7 +211,7 @@ function precon_community_box( $object, $box ) { ?>
 	<p>
 		<label for="community">Community Analysis</label>
 		<br />
-		<textarea name="community" id="community" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo wp_specialchars( get_post_meta( $object->ID, 'Community', true ), 1 ); ?></textarea>
+		<textarea name="community" id="community" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'Community', true ), 1 ); ?></textarea>
 		<input type="hidden" name="community_box_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 	</p>
 <?php }
