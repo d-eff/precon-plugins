@@ -143,8 +143,9 @@ function precon_q_save_forecast( $post_id, $post ) {
 
 }
 
-function getData($tid) {
-	$vote_arr = get_post_meta($tid, 'voteArray', true);
+function getData($tid, $suffix) {
+	$vaName = 'voteArray' . $suffix;
+	$vote_arr = get_post_meta($tid, $vaName, true);
 	$vote_count = get_post_meta($tid, 'voteCount', true);
 
 	if(!empty($vote_count) && !empty($vote_arr)) {
@@ -214,6 +215,15 @@ function house_validation($amount) {
 }
 
 function complete_voting($amount, $tid, $user_level, $intime) {
+	if($user_level > 2) {
+		$suffix = 'admin';
+	} elseif ($user_level > 0) {
+		$suffix = 'auth';
+	} else {
+		$suffix = 'sub';
+	}
+	$vaName = 'voteArray' . $suffix;
+
 	global $reg_errors, $amount;
 	if(count($reg_errors->get_error_messages()) < 1) {
 		$data = array('vote' => $amount);
@@ -222,7 +232,7 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 	$new_meta_value = intval(stripslashes( $amount ));
 
 	$lastTime = intval(get_post_meta($tid, 'lastTime', true));
-	$vote_arr = get_post_meta($tid, 'voteArray', true);
+	$vote_arr = get_post_meta($tid, $vaName, true);
 	$vote_count = get_post_meta($tid, 'voteCount', true);
 
 	$timeStamp = current_time('timestamp');
@@ -234,12 +244,12 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 		$vote_arr = array(strval($lastTime) => $new_meta_value);
 		$vote_count = array(strval($lastTime) => 1);
 		add_post_meta($tid, 'lastTime', $lastTime, true);
-		add_post_meta($tid, 'voteArray', $vote_arr, true);
+		add_post_meta($tid, $vaName, $vote_arr, true);
 		add_post_meta($tid, 'voteCount', $vote_count, true);
 	} elseif ($difference < 60) {
 		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value;
 		$vote_count[strval($lastTime)] = $vote_count[strval($lastTime)] + 1;
-		update_post_meta($tid, 'voteArray', $vote_arr);
+		update_post_meta($tid, $vaName, $vote_arr);
 		update_post_meta($tid, 'lastTime', $lastTime);
 		update_post_meta($tid, 'voteCount', $vote_count);
 	} elseif ($difference >= 60) {
@@ -250,7 +260,7 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 		$lastTime = $timeStamp - ($difference % 60);
 		$vote_arr[strval($lastTime)] = $new_meta_value;
 		$vote_count[strval($lastTime)] = 1;
-		update_post_meta($tid, 'voteArray', $vote_arr);
+		update_post_meta($tid, $vaName, $vote_arr);
 		update_post_meta($tid, 'lastTime', $lastTime);
 		update_post_meta($tid, 'voteCount', $vote_count);
 	}
