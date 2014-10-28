@@ -142,17 +142,19 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 		$vote_arr = array(strval($lastTime) => $new_meta_value);
 		add_post_meta($tid, 'lastTime', $lastTime, true);
 		add_post_meta($tid, 'voteArray', $vote_arr, true);
-	} elseif ($difference < 86400) {
+	} elseif ($difference < 300) {
 		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value;
 		update_post_meta($tid, 'voteArray', $vote_arr);
 		update_post_meta($tid, 'lastTime', $lastTime);
-	} elseif ($difference >= 86400) {
+	} elseif ($difference >= 300) {
 		echo 'diff' . $difference;
-		for($x = $lastTime + 86400; $x < $timeStamp; $x += 86400) {
-			$vote_arr[strval($x)] = $vote_array[strval($lastTime)];
+		for($x = $lastTime + 300; $x < $timeStamp; $x += 300) {
+			$vote_arr[strval($x)] = $vote_arr[strval($lastTime)];
 		}
-		$lastTime = $timeStamp - ($difference % 86400);
-		$vote_array[strval($lastTime)] = $new_meta_value;
+		$lastTime = $timeStamp - ($difference % 300);
+		$vote_arr[strval($lastTime)] = $new_meta_value;
+		update_post_meta($tid, 'voteArray', $vote_arr);
+		update_post_meta($tid, 'lastTime', $lastTime);
 	}
 
 
