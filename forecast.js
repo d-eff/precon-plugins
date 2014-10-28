@@ -18,6 +18,7 @@ function drawGraph(data) {
 	for(var x = 0; x < data.length; ++x) {
 		graphData.push({'x': x, 'y': +data[x]});
 	}
+	InitChart(graphData);
 
 	var height = 200,
 		width = 200;
@@ -53,31 +54,13 @@ function drawGraph(data) {
 }
 
 
-function InitChart() {
+function InitChart(lineData) {
 
-  var lineData = [{
-    'x': 1,
-    'y': 5
-  }, {
-    'x': 20,
-    'y': 20
-  }, {
-    'x': 40,
-    'y': 10
-  }, {
-    'x': 60,
-    'y': 40
-  }, {
-    'x': 80,
-    'y': 5
-  }, {
-    'x': 100,
-    'y': 60
-  }];
+ 
 
   var vis = d3.select("#visualisation"),
-    WIDTH = 1000,
-    HEIGHT = 500,
+    WIDTH = 500,
+    HEIGHT = 300,
     MARGINS = {
       top: 20,
       right: 20,
@@ -92,13 +75,7 @@ function InitChart() {
       })
     ]),
 
-    yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(lineData, function (d) {
-        return d.y;
-      }),
-      d3.max(lineData, function (d) {
-        return d.y;
-      })
-    ]),
+    yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0, 100]),
 
     xAxis = d3.svg.axis()
       .scale(xRange)
