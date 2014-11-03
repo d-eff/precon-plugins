@@ -5,9 +5,9 @@ window.attachEvent && window.attachEvent("onload",init);
 function init() {
 	
 	var votes = document.querySelectorAll('.voteData');
-	console.log(votes);
+	
 	for(var x = 0; x < votes.length; ++x) {
-		var dat = votes[x].innerHTML.trim().split(' ');
+		var dat = votes[x].dataset.votes.trim().split(' ');
 		drawGraph(dat, x);
 	}
 	//InitChart();
