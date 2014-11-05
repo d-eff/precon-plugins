@@ -53,91 +53,86 @@ function precon_country_init() {
 }
 
 function add_country_metaboxes() {
-   add_meta_box('events', 'Events to Watch', 'precon_event_box', 'Country', 'normal', 'default');
-   add_meta_box('key_risks', 'Key Risks', 'precon_key_risk_box', 'Country', 'normal', 'default');
-   add_meta_box('policy_risks', 'Policy Risks', 'precon_policy_risk_box', 'Country', 'normal', 'default');
+   add_meta_box('info_boxes', 'Additional Info', 'precon_country_boxes', 'Country', 'normal', 'default');
 
 }
 
+function precon_country_boxes() {
+	global $post;
+ 
+    $info_boxes = get_post_meta($post->ID, 'info_boxes', true);
+ 
+    wp_nonce_field( 'info_meta_box_nonce', 'info_meta_box_nonce' );
+?>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$('#add_box').on('click', function(e) {
+	       		var row = $('#infobox_sample').clone(true);  		
+	        	row.removeClass('hidden');
+	        	console.log(row);
+	        	row.insertBefore('#infobox_sample');
+	        	return false;
+    		});
+    		$('.remove_box').on('click', function(){
+    			$(this).parent('.infobox').remove();
+    			return false;
+    		});
+		});
 
-function precon_event_box( $object, $box ) { ?>
-	<p>
-		<label for="events">Events to Watch</label>
-		<br />
-		<textarea name="events" id="events" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'events', true ), 1 ); ?></textarea>
-		<input type="hidden" name="events_box_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
+	</script>
+<?php if ($info_boxes):
+	foreach($info_boxes as $box) {  ?>
+	<p class="infobox">
+		<input type="text" class="widefat" name="box_title[]" value="<?php if ($box['box_title'] != '') echo esc_attr( $box['box_title'] ); ?>" />
+		<textarea name="box_content[]" id="events" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php if($box['box_content'] != '') echo esc_attr( $box['box_content'] ); ?></textarea>
+		<a href="#" class="remove_box">Remove section</a>
 	</p>
-<?php }
-function precon_key_risk_box( $object, $box ) { ?>
-	<p>
-		<label for="key_risks">Key Risks</label>
-		<br />
-		<textarea name="key_risks" id="key_risks" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'key_risks', true ), 1 ); ?></textarea>
-		<input type="hidden" name="key_risks_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
+<?php } else: ?>
+	<p class="infobox">
+		<input type="text" class="widefat" name="box_title[]" placeholder="Title"/>
+		<textarea name="box_content[]" id="events" cols="60" rows="4" tabindex="30" style="width: 97%;"></textarea>
 	</p>
-<?php }
-function precon_policy_risk_box( $object, $box ) { ?>
-	<p>
-		<label for="policy_risks">Policy Risks</label>
-		<br />
-		<textarea name="policy_risks" id="policy_risks" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'policy_risks', true ), 1 ); ?></textarea>
-		<input type="hidden" name="policy_risks_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
+<?php endif;
+?>
+	<p class="infobox hidden" id="infobox_sample">
+		<input type="text" class="widefat" name="box_title[]" placeholder="Title"/>
+		<textarea name="box_content[]" id="events" cols="60" rows="4" tabindex="30" style="width: 97%;"></textarea>
+		<a href="#" class="remove_box">Remove section</a>
 	</p>
+	<a href="#" id="add_box">Add New Box</a>
+
 <?php }
 
-function precon_country_save_meta( $post_id, $post ) {
-	if ( !current_user_can( 'edit_post', $post_id ) )
-			return $post_id;
-
-	if ( !wp_verify_nonce( $_POST['events_box_nonce'], plugin_basename( __FILE__ ) ) ) {
-		return $post_id;
-	} else {
-		$meta_value = get_post_meta( $post_id, 'events', true );
-		$new_meta_value = stripslashes( $_POST['events'] );
-
-		if ( $new_meta_value && '' == $meta_value )
-			add_post_meta( $post_id, 'events', $new_meta_value, true );
-
-		elseif ( $new_meta_value != $meta_value )
-			update_post_meta( $post_id, 'events', $new_meta_value );
-
-		elseif ( '' == $new_meta_value && $meta_value )
-			delete_post_meta( $post_id, 'events', $meta_value );
-	}
+function precon_country_save_meta( $post_id ) {
+	 if ( ! isset( $_POST['info_meta_box_nonce'] ) ||
+        ! wp_verify_nonce( $_POST['info_meta_box_nonce'], 'info_meta_box_nonce' ) )
+        return;
 	
+    if (!current_user_can('edit_post', $post_id))
+        return;
 
-	if ( !wp_verify_nonce( $_POST['key_risks_nonce'], plugin_basename( __FILE__ ) ) ) {
-		return $post_id;
-	} else {
-		$meta_value = get_post_meta( $post_id, 'key_risks', true );
-		$new_meta_value = stripslashes( $_POST['key_risks'] );
-
-		if ( $new_meta_value && '' == $meta_value )
-			add_post_meta( $post_id, 'key_risks', $new_meta_value, true );
-
-		elseif ( $new_meta_value != $meta_value )
-			update_post_meta( $post_id, 'key_risks', $new_meta_value );
-
-		elseif ( '' == $new_meta_value && $meta_value )
-			delete_post_meta( $post_id, 'key_risks', $meta_value );
-	}
-		
-
-	if ( !wp_verify_nonce( $_POST['policy_risks_nonce'], plugin_basename( __FILE__ ) ) ) {
-		return $post_id;
-	} else {
-		$meta_value = get_post_meta( $post_id, 'policy_risks', true );
-		$new_meta_value = stripslashes( $_POST['policy_risks'] );
-
-		if ( $new_meta_value && '' == $meta_value )
-			add_post_meta( $post_id, 'policy_risks', $new_meta_value, true );
-
-		elseif ( $new_meta_value != $meta_value )
-			update_post_meta( $post_id, 'policy_risks', $new_meta_value );
-
-		elseif ( '' == $new_meta_value && $meta_value )
-			delete_post_meta( $post_id, 'policy_risks', $meta_value );
-	}
+    $old = get_post_meta($post_id, 'info_boxes', true);
+    $new = array();
+ 
+    $titles = $_POST['box_title'];
+    $contents = $_POST['box_content'];
+ 
+    $count = count( $titles );
+ 
+    for ( $i = 0; $i < $count; $i++ ) {
+        if ( $titles[$i] != '' ) :
+            $new[$i]['box_title'] = stripslashes( strip_tags( $titles[$i] ) );
+ 
+ 
+        if ( $contents[$i] != '' )
+            $new[$i]['box_content'] = stripslashes( $contents[$i] ); 
+        endif;
+    }
+ 
+    if ( !empty( $new ) && $new != $old )
+        update_post_meta( $post_id, 'info_boxes', $new );
+    elseif ( empty($new) && $old )
+        delete_post_meta( $post_id, 'info_boxes', $old );
 
 
 }
