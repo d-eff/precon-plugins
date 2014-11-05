@@ -43,7 +43,7 @@ function precon_issue_init() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => null,
-		'menu_icon'			 => 'dashicons-chart-line',
+		'menu_icon'			 => 'dashicons-welcome-widgets-menus',
 		'supports'           => array( 'title', 'editor', 'thumbnail', 'tags', 'page-attributes'),
 		'register_meta_box_cb' => 'add_issue_metaboxes',
 		'taxonomies' => array( 'post_tag', 'category'), 
@@ -53,10 +53,37 @@ function precon_issue_init() {
 }
 
 function add_issue_metaboxes() {
-
+	add_meta_box('excerpt', 'Excerpt', 'precon_issue_excerpt', 'issue', 'normal', 'default');
 }
 
-function precon_q_save_issue() {
+function precon_issue_excerpt( $object, $box ) { ?>
+	<p>
+		<label for="excerpt">Excerpt</label>
+		<br />
+		<textarea name="excerpt" id="excerpt" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'excerpt', true ), 1 ); ?></textarea>
+		<input type="hidden" name="house_excerpt_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
+	</p>
+<?php }
 
+function precon_q_save_issue($post_id, $post) {
+
+	if ( !current_user_can( 'edit_post', $post_id ) )
+		return $post_id;
+
+	if ( isset($_POST['house_excerpt_nonce']) && !wp_verify_nonce( $_POST['house_excerpt_nonce'], plugin_basename( __FILE__ ) ) ) {
+		return $post_id;
+	} else {
+		$meta_value = get_post_meta( $post_id, 'excerpt', true );
+		$new_meta_value = stripslashes( $_POST['excerpt'] );
+
+		if ( $new_meta_value && '' == $meta_value )
+			add_post_meta( $post_id, 'excerpt', $new_meta_value, true );
+
+		elseif ( $new_meta_value != $meta_value )
+			update_post_meta( $post_id, 'excerpt', $new_meta_value );
+
+		elseif ( '' == $new_meta_value && $meta_value )
+			delete_post_meta( $post_id, 'excerpt', $meta_value );		
+	}
 	
 }
