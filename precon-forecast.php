@@ -141,6 +141,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 	}
 		
 
+
 }
 
 function getData($tid, $suffix) {
@@ -215,7 +216,7 @@ function house_validation($amount) {
 	}
 }
 
-function complete_voting($amount, $tid, $user_level, $intime) {
+function complete_voting($amount, $tid, $user_level, $intime, $UID) {
 	if($user_level > 2) {
 		$suffix = 'admin';
 	} elseif ($user_level > 0) {
@@ -237,17 +238,19 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 	$lastTime = intval(get_post_meta($tid, $last, true));
 	$vote_arr = get_post_meta($tid, $vaName, true);
 	$vote_count = get_post_meta($tid, $vc, true);
-	$interval = 60;
+	$voters = get_post_meta($tid, 'voters', true);
+	$interval = 86400;
 
 	$timeStamp = current_time('timestamp');
 	$difference = $timeStamp - $lastTime;
-	echo $difference;
 
 	//if there's no meta, the graph is unitialized
 	if(empty($lastTime) || empty($vote_arr) || empty($vote_count)) {
 		$lastTime = $intime;
-		$vote_arr = array(strval($lastTime) => $new_meta_value);
-		$vote_count = array(strval($lastTime) => 1);
+		$vote_arr = array(strval($lastTime-$interval) => $new_meta_value,
+								strval($lastTime) => $new_meta_value);
+		$vote_count = array(strval($lastTime-$interval) => 1,
+							strval($lastTime) => 1);
 		add_post_meta($tid, $last, $lastTime, true);
 		add_post_meta($tid, $vaName, $vote_arr, true);
 		add_post_meta($tid, $vc, $vote_count, true);
@@ -272,14 +275,11 @@ function complete_voting($amount, $tid, $user_level, $intime) {
 		update_post_meta($tid, $vc, $vote_count);
 	}
 
-	//echo var_dump($vote_arr) . ' ';
-	//echo var_dump($vote_count) . ' ';
-
 	$_POST['amount'] = '--';
 
 }
 
-function custom_vote_function($tid, $user_level, $intime) {
+function custom_vote_function($tid, $user_level, $intime, $UID) {
 	global $amount;	
 
 	if(!empty($_POST)) {
@@ -290,7 +290,7 @@ function custom_vote_function($tid, $user_level, $intime) {
 			
 				$amount = $_POST['amount'];
 
-				complete_voting($amount, $tid, $user_level, $intime);
+				complete_voting($amount, $tid, $user_level, $intime, $UID);
 			
 		}
 	}

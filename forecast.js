@@ -32,8 +32,8 @@ function drawGraph(data, count) {
 function InitChart1(lineData, innum) {
 
   var vis = d3.select("#visualisation1"),
-    WIDTH = 500,
-    HEIGHT = 300,
+    WIDTH = 300,
+    HEIGHT = 200,
     MARGINS = {
       top: 20,
       right: 20,
@@ -53,13 +53,13 @@ function InitChart1(lineData, innum) {
     xAxis = d3.svg.axis()
       .scale(xRange)
       .tickSize(5)
-      .tickSubdivide(true),
+      .tickSubdivide(false),
 
     yAxis = d3.svg.axis()
       .scale(yRange)
       .tickSize(5)
       .orient("left")
-      .tickSubdivide(true);
+      .tickSubdivide(false);
 
 
   vis.append("svg:g")
@@ -93,8 +93,8 @@ vis.append("svg:path")
 function InitChart0(lineData, innum) {
 
   var vis = d3.select("#visualisation0"),
-    WIDTH = 500,
-    HEIGHT = 300,
+    WIDTH = 300,
+    HEIGHT = 200,
     MARGINS = {
       top: 20,
       right: 20,
@@ -114,13 +114,15 @@ function InitChart0(lineData, innum) {
     xAxis = d3.svg.axis()
       .scale(xRange)
       .tickSize(5)
-      .tickSubdivide(true),
+      .orient('bottom')
+      .tickSubdivide(false),
+      //.tickFormat(d3.date.format(%H))
 
     yAxis = d3.svg.axis()
       .scale(yRange)
       .tickSize(5)
       .orient("left")
-      .tickSubdivide(true);
+      .tickSubdivide(false);
 
 
   vis.append("svg:g")
@@ -154,8 +156,8 @@ vis.append("svg:path")
 function InitChart2(lineData, innum) {
 
   var vis = d3.select("#visualisation2"),
-    WIDTH = 500,
-    HEIGHT = 300,
+    WIDTH = 300,
+    HEIGHT = 200,
     MARGINS = {
       top: 20,
       right: 20,
@@ -175,13 +177,13 @@ function InitChart2(lineData, innum) {
     xAxis = d3.svg.axis()
       .scale(xRange)
       .tickSize(5)
-      .tickSubdivide(true),
+      .tickSubdivide(false),
 
     yAxis = d3.svg.axis()
       .scale(yRange)
       .tickSize(5)
       .orient("left")
-      .tickSubdivide(true);
+      .tickSubdivide(false);
 
 
   vis.append("svg:g")
