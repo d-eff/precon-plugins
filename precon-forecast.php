@@ -175,7 +175,8 @@ add_action( 'init', 'add_forecast_scripts' );
 
 function house_form($amount) {
 	echo 
-	'<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
+	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
+	 <form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
    
     <label for="amount">Vote</label>
    	<select name="amount">
@@ -204,7 +205,7 @@ function house_form($amount) {
    	</select>
    		<input type="submit" name="submit" value="Vote"/>
    		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
-    </form>';
+    </form></div>';
 }
 
 function house_validation($amount) {
