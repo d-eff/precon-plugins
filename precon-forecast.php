@@ -217,6 +217,7 @@ function house_validation($amount) {
 }
 
 function complete_voting($amount, $tid, $user_level, $intime, $UID) {
+	//three different sets of values, for 3 user levels
 	if($user_level > 2) {
 		$suffix = 'admin';
 	} elseif ($user_level > 0) {
@@ -227,11 +228,6 @@ function complete_voting($amount, $tid, $user_level, $intime, $UID) {
 	$vaName = 'voteArray' . $suffix;
 	$vc = 'voteCount' . $suffix;
 	$last = 'lastTime' . $suffix;
-
-	global $reg_errors, $amount;
-	if(count($reg_errors->get_error_messages()) < 1) {
-		$data = array('vote' => $amount);
-	}
 
 	$new_meta_value = intval(stripslashes( $amount ));
 
@@ -251,13 +247,24 @@ function complete_voting($amount, $tid, $user_level, $intime, $UID) {
 								strval($lastTime) => $new_meta_value);
 		$vote_count = array(strval($lastTime-$interval) => 1,
 							strval($lastTime) => 1);
+		$voters = array($UID => $new_meta_value);
+
+		add_post_meta($tid, $voters, true);
 		add_post_meta($tid, $last, $lastTime, true);
 		add_post_meta($tid, $vaName, $vote_arr, true);
-		add_post_meta($tid, $vc, $vote_count, true);
+		add_post_meta($tid, $vc, $vote_count, true); 
 	//if the current time is less than one day ahead
 	} elseif ($difference < $interval) {
-		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value;
-		$vote_count[strval($lastTime)] = $vote_count[strval($lastTime)] + 1;
+		$vote_mod = 0;
+		$vc_mod = 0;
+		if(array_key_exists($UID, $voters)) {
+			$vc_mod = -1;
+			$vote_mod = $voters[$UID] - $new_meta_value; 
+		}
+		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value + $vote_mod;
+		$vote_count[strval($lastTime)] = $vote_count[strval($lastTime)] + 1 + $vc_mod;
+		$voters[$UID] = $new_meta_value;
+		update_post_meta($tid, 'voters', $voters);
 		update_post_meta($tid, $vaName, $vote_arr);
 		update_post_meta($tid, $last, $lastTime);
 		update_post_meta($tid, $vc, $vote_count);
