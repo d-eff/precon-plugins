@@ -134,6 +134,14 @@ function precon_country_save_meta( $post_id ) {
     elseif ( empty($new) && $old )
         delete_post_meta( $post_id, 'info_boxes', $old );
 
+	//need to add support for changing post title?
+	$title = $post->post_title;
+	if($title != 'Auto Draft') {
+		$newCat = wp_create_category($title, get_cat_ID('issue'));
+
+		wp_set_post_categories($post_id, array($newCat), TRUE);
+
+	}
 
 }
 

@@ -85,5 +85,14 @@ function precon_q_save_issue($post_id, $post) {
 		elseif ( '' == $new_meta_value && $meta_value )
 			delete_post_meta( $post_id, 'excerpt', $meta_value );		
 	}
+
+	//need to add support for changing post title?
+	$title = $post->post_title;
+	if($title != 'Auto Draft') {
+		$newCat = wp_create_category($title, get_cat_ID('issue'));
+
+		wp_set_post_categories($post_id, array($newCat), TRUE);
+
+	}
 	
 }
