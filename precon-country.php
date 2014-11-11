@@ -137,7 +137,7 @@ function precon_country_save_meta( $post_id ) {
 	//need to add support for changing post title?
 	$title = $post->post_title;
 	if($title != 'Auto Draft') {
-		$newCat = wp_create_category($title, get_cat_ID('issue'));
+		$newCat = wp_create_category($title, get_cat_ID('country'));
 
 		wp_set_post_categories($post_id, array($newCat), TRUE);
 
