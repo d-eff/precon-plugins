@@ -314,5 +314,3 @@ function pr_vote_shortcode() {
     custom_vote_function();
     return ob_get_clean();
 }
-
-

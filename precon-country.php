@@ -103,7 +103,7 @@ function precon_country_boxes() {
 
 <?php }
 
-function precon_country_save_meta( $post_id ) {
+function precon_country_save_meta( $post_id, $post ) {
 	 if ( ! isset( $_POST['info_meta_box_nonce'] ) ||
         ! wp_verify_nonce( $_POST['info_meta_box_nonce'], 'info_meta_box_nonce' ) )
         return;
@@ -136,14 +136,11 @@ function precon_country_save_meta( $post_id ) {
 
 	//need to add support for changing post title?
 	$title = $post->post_title;
+
 	if($title != 'Auto Draft') {
 		$newCat = wp_create_category($title, get_cat_ID('country'));
 
 		wp_set_post_categories($post_id, array($newCat), TRUE);
 
 	}
-
 }
-
-
-
