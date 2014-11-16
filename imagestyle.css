@@ -1,0 +1,29 @@
+.precon-imgWidgetContainer {
+	width: 245px;
+	position: relative;
+}
+.precon-imgWidgetImage {
+	width: 100%;
+}
+.precon-imgWidgetTextWrap {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	color: white;
+	border: 5px solid white;
+	width: 215px;
+	height: 84%;
+}
+.precon-imgWidgetText {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+}
+.precon-imgWidgetText h1 {
+	font-size: 14px;
+	font-weight: normal;
+}
+.precon-imgWidgetText h2 {
+	font-size: 24px;
+	font-weight: normal;
+}
