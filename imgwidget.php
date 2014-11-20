@@ -83,7 +83,7 @@
                 //echo the_post_thumbnail(array(220,200));
                 echo '<div class="precon-imgWidgetContainer">' .
                         '<a href="' . $link .'"><img src="' . $instance['image'] . '" class="precon-imgWidgetImage">' .
-                        '<div class="precon-imgWidgetTextWrap"><span class="precon-imgWidgetText">' . $copy . '</span></div>' .
+                        '<div class="precon-imgWidgetTextWrap"><span class="precon-imgWidgetText">' . $copy . '</span></div></a>' .
                       '</div>';
         echo $after_widget;
         }
