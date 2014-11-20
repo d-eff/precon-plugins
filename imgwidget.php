@@ -19,6 +19,7 @@
             $image = $instance['image'];
             $copy = $instance['copy'];
             $checkbox = $instance['checkbox'];
+            $link = $instance['link'];
             ?>
             <p>
                 <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Wiget Title', 'cc_language'); ?>:
@@ -42,6 +43,10 @@
                 <textarea id="<?php echo $this->get_field_id('copy'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('copy'); ?>" /><?php echo $instance['copy']; ?></textarea></label>
             </p>
             <p>
+                <label for="<?php echo $this->get_field_id('link'); ?>"><?php _e('Link', 'cc_language'); ?>:
+                <input id="<?php echo $this->get_field_id('link'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('link'); ?>" value="<?php echo $instance['link']; ?>" /></label>
+            </p>
+            <p>
                 <label for="<?php echo $this->get_field_id('checkbox'); ?>"><?php _e('Do not show title', 'cc_language'); ?></label>
                 <input id="<?php echo $this->get_field_id('checkbox'); ?>" type="checkbox" name="<?php echo $this->get_field_name('checkbox'); ?>" value="true" <?php checked( 'true', $checkbox ); ?> />
             </p>
@@ -54,6 +59,7 @@
                 $instance['image'] = $new_instance['image']; 
                 $instance['checkbox'] = strip_tags($new_instance['checkbox']); 
                 $instance['copy'] = $new_instance['copy'];
+                $instance['link'] = $new_instance['link'];
             return $instance;
         }
 
@@ -62,6 +68,7 @@
 
             $title = apply_filters('widget_title', empty($instance['title']) ? __('Image') : $instance['title'], $instance, $this->id_base);
             $copy = $instance['copy'];
+            $link = $instance['link'];
 
             echo $before_widget;
 
@@ -75,7 +82,7 @@
             // display the widget content 
                 //echo the_post_thumbnail(array(220,200));
                 echo '<div class="precon-imgWidgetContainer">' .
-                        '<img src="' . $instance['image'] . '" class="precon-imgWidgetImage">' .
+                        '<a href="' . $link .'"><img src="' . $instance['image'] . '" class="precon-imgWidgetImage">' .
                         '<div class="precon-imgWidgetTextWrap"><span class="precon-imgWidgetText">' . $copy . '</span></div>' .
                       '</div>';
         echo $after_widget;

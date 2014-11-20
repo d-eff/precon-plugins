@@ -27,3 +27,8 @@
 	font-size: 24px;
 	font-weight: normal;
 }
+.precon-imgWidgetContainer a {
+	padding: 0 !important;
+	border-left: none !important;
+	margin: 0 !important;  
+}
