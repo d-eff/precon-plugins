@@ -173,13 +173,19 @@ function add_forecast_scripts() {
 
 add_action( 'init', 'add_forecast_scripts' );
 
+function notlogged_form() {
+	echo 
+	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
+	<p class="voteInstr">To submit your own forecasts, please log in or register as a user.</p>
+	</div>';
+}
+
 function house_form($amount) {
 	echo 
 	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
 	 <p class="voteInstr">Submit your forecast here. You can update your forecast during the day, and only your last submission will count for that day’s forecast.</p>
 	 <form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
    
-    <label for="amount">Vote</label>
    	<select name="amount">
    		<option value="--">--</option>
    		<option value="100">100%</option>

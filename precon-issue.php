@@ -53,16 +53,17 @@ function precon_issue_init() {
 }
 
 function add_issue_metaboxes() {
-	add_meta_box('excerpt', 'Excerpt', 'precon_issue_excerpt', 'issue', 'normal', 'default');
+   add_meta_box('summary_box', 'Summary', 'precon_issue_boxes', 'Issue', 'normal', 'default');
+
 }
 
-function precon_issue_excerpt( $object, $box ) { ?>
-	<p>
-		<label for="excerpt">Excerpt</label>
-		<br />
+function precon_issue_boxes($object) { ?>
+
+	<p class="infobox">
 		<textarea name="excerpt" id="excerpt" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'excerpt', true ), 1 ); ?></textarea>
 		<input type="hidden" name="house_excerpt_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 	</p>
+
 <?php }
 
 function precon_q_save_issue($post_id, $post) {
