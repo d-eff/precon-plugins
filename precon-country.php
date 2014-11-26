@@ -38,7 +38,7 @@ function precon_country_init() {
 		'show_ui'            => true,
 		'show_in_menu'       => true,
 		'query_var'          => true,
-		'rewrite'            => array( 'slug' => 'Country' ),
+		'rewrite'            => array( 'slug' => 'countries' ),
 		'capability_type'    => 'post',
 		'has_archive'        => true,
 		'hierarchical'       => false,

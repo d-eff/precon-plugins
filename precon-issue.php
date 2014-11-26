@@ -38,7 +38,7 @@ function precon_issue_init() {
 		'show_ui'            => true,
 		'show_in_menu'       => true,
 		'query_var'          => true,
-		'rewrite'            => array( 'slug' => 'issue' ),
+		'rewrite'            => array( 'slug' => 'issues' ),
 		'capability_type'    => 'post',
 		'has_archive'        => true,
 		'hierarchical'       => false,
