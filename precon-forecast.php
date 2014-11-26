@@ -163,7 +163,7 @@ function getData($tid, $suffix) {
 function add_forecast_scripts() {
 	wp_enqueue_script(
 		'forecast',
-		plugins_url( '/forecast.js' , __FILE__ )
+		plugins_url( '/precon-forecast.js' , __FILE__ )
 	);
 	wp_enqueue_script(
 		'd3',

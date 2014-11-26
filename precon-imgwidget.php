@@ -1,19 +1,26 @@
 <?php
 /**
- * Plugin Name: Img Widget Test
- * Plugin URI: http:policyrecon.com
- * Description: Img Widget test
+ * Plugin Name: Policy Recon Img Widget
+ * Plugin URI: http:www.policyrecon.com
+ * Description: Policy Recon Img Widget
  * Version: 1.0.0
- * Text Domain: imgwidgettest
+ * Text Domain: pr-img-widget
  */
 // Creating the widget 
-    class cc_widget_image extends WP_Widget {
-        function cc_widget_image() {
-            $widget_ops = array('classname' => 'cc_widget_image', 'description' => __( 'Select and show an image.', 'cc_language' ) );
-            $this->WP_Widget('cc_widget_image', 'CC - ' . __( 'Image', 'cc_language' ), $widget_ops);
+    class precon_widget_image extends WP_Widget {
+        function precon_widget_image() {
+            $widget_ops = array('classname' => 'precon_widget_image', 'description' => __( 'Display an image with (optional) text over it.', 'cc_language' ) );
+            $this->WP_Widget('precon_widget_image', 'Policy Recon Img Widget', $widget_ops);
         }
 
         function form($instance) {
+            $defaults = array(
+                'title' => '',
+                'image' => '',
+                'copy' => '',
+                'checkbox' => '',
+                'link' => ''
+            );
             $instance = wp_parse_args( (array) $instance, $defaults );
             $title = $instance['title'];
             $image = $instance['image'];
@@ -23,28 +30,28 @@
             ?>
             <p>
                 <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Wiget Title', 'cc_language'); ?>:
-                <input id="<?php echo $this->get_field_id('title'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" /></label>
+                <input id="<?php echo $this->get_field_id('title'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $title; ?>" /></label>
                 <span>Please include a title even if you intend to hide it.</span>
             </p>
             <p>
                 <label for="<?php echo $this->get_field_id('image'); ?>"><?php _e('Current Image', 'cc_language'); ?>:
-                <input id="<?php echo $this->get_field_id('image'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('image'); ?>" value="<?php echo $instance['image']; ?>" /></label>
+                <input id="<?php echo $this->get_field_id('image'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('image'); ?>" value="<?php echo $image; ?>" /></label>
             </p>
             <p>
                 <label for="cc-image-upload-file"><?php _e('Image', 'cc_language'); ?>:</label><br>
                 <label for="cc-image-upload-file">
-                    <input type="text" id="cc-image-upload-file" class="widefat custom_media_image custom_media_url" name="<?php echo $this->get_field_name('image'); ?>" value="<?php echo $instance['image']; ?>" />
+                    <input type="text" id="cc-image-upload-file" class="widefat custom_media_image custom_media_url" name="<?php echo $this->get_field_name('image'); ?>" value="<?php echo $image; ?>" />
                     <input type="button" id="cc-image-upload-file-button" class="button custom_media_upload" value="Upload file" />
                     <label for="cc-image-upload-file"><span class="description">Enter URL or upload file</span></label>
                 </label>
             </p>
             <p>
                 <label for="<?php echo $this->get_field_id('copy'); ?>"><?php _e('Copy', 'cc_language'); ?>:
-                <textarea id="<?php echo $this->get_field_id('copy'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('copy'); ?>" /><?php echo $instance['copy']; ?></textarea></label>
+                <textarea id="<?php echo $this->get_field_id('copy'); ?>" class="widefat" type="text" rows="5" name="<?php echo $this->get_field_name('copy'); ?>"><?php echo $copy; ?></textarea>
             </p>
             <p>
-                <label for="<?php echo $this->get_field_id('link'); ?>"><?php _e('Link', 'cc_language'); ?>:
-                <input id="<?php echo $this->get_field_id('link'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('link'); ?>" value="<?php echo $instance['link']; ?>" /></label>
+                <label for="<?php echo $this->get_field_id('link'); ?>"><?php _e('Link', 'cc_language'); ?> (please include 'http://'):
+                <input id="<?php echo $this->get_field_id('link'); ?>" class="widefat" type="text" name="<?php echo $this->get_field_name('link'); ?>" value="<?php echo $link; ?>" /></label>
             </p>
             <p>
                 <label for="<?php echo $this->get_field_id('checkbox'); ?>"><?php _e('Do not show title', 'cc_language'); ?></label>
@@ -80,7 +87,6 @@
                 }
 
             // display the widget content 
-                //echo the_post_thumbnail(array(220,200));
                 echo '<div class="precon-imgWidgetContainer">' .
                         '<a href="' . $link .'"><img src="' . $instance['image'] . '" class="precon-imgWidgetImage">' .
                         '<div class="precon-imgWidgetTextWrap"><span class="precon-imgWidgetText">' . $copy . '</span></div></a>' .
@@ -88,14 +94,14 @@
         echo $after_widget;
         }
     }
-    function imgwidget_enqueue_scripts(){
-        wp_enqueue_script('mepload', plugins_url() . '/precon/mepload.js');
+    function precon_imgwidget_enqueue_scripts(){
+        wp_enqueue_script('precon-mepload', plugins_url() . '/precon/precon-mepload.js');
         wp_enqueue_media();
     }
-    function imgwidget_enqueue_style() {
-        wp_enqueue_style('precon-image-style', plugins_url() . '/precon/imagestyle.css');
+    function precon_imgwidget_enqueue_style() {
+        wp_enqueue_style('precon-image-style', plugins_url() . '/precon/precon-imgstyle.css');
     }
-    add_action( 'widgets_init', create_function('', 'return register_widget("cc_widget_image");') );
+    add_action( 'widgets_init', create_function('', 'return register_widget("precon_widget_image");') );
 
-    add_action('admin_enqueue_scripts', 'imgwidget_enqueue_scripts');
-    add_action('wp_enqueue_scripts', 'imgwidget_enqueue_style');
+    add_action('admin_enqueue_scripts', 'precon_imgwidget_enqueue_scripts');
+    add_action('wp_enqueue_scripts', 'precon_imgwidget_enqueue_style');
