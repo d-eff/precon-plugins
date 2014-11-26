@@ -184,7 +184,7 @@ function house_form($amount) {
 	echo 
 	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
 	 <p class="voteInstr">Submit your forecast here. You can update your forecast during the day, and only your last submission will count for that day’s forecast.</p>
-	 <form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
+	 <form action="' . $_SERVER['REQUEST_URI'] . '" method="post" class="forecastForm">
    
    	<select name="amount">
    		<option value="--">--</option>
@@ -210,7 +210,7 @@ function house_form($amount) {
    		<option value="5">5%</option>
    		<option value="0">0%</option>
    	</select>
-   		<input type="submit" name="submit" value="Submit"/>
+   		<input type="submit" name="submit" value="Submit" class="forecastFormButton"/>
    		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
     </form></div>';
 }
