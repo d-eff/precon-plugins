@@ -12,7 +12,7 @@
 add_action( 'init', 'precon_forecast_init' );
 add_action( 'save_post_forecast', 'precon_q_save_forecast', 10, 2 );
 
-
+//Create Forecast Post Type
 function precon_forecast_init() {
 	$labels = array(
 		'name'               => _x( 'Forecast', 'post type general name', 'precon-forecast' ),
@@ -39,7 +39,7 @@ function precon_forecast_init() {
 		'show_in_menu'       => true,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'forecasts' ),
-		'capability_type'    => 'post',
+		'capability_type'    => array('precon_forecast', 'precon_forecasts'),
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => null,
@@ -52,13 +52,41 @@ function precon_forecast_init() {
 	register_post_type( 'forecast', $args );
 }
 
+//
+//Add editing permissions for Admins
+//
+add_action('admin_init','precon_forecast_add_role_caps',999);
+function precon_forecast_add_role_caps() {
+		//role array, so we can easily add other roles
+		$roles = array('administrator');
+		
+		// Loop through each role and assign capabilities
+		foreach($roles as $the_role) { 
+
+		     $role = get_role($the_role);
+			
+	             $role->add_cap( 'read' );
+	             $role->add_cap( 'read_precon_forecast');
+	             $role->add_cap( 'read_private_precon_forecasts' );
+	             $role->add_cap( 'edit_precon_forecast' );
+	             $role->add_cap( 'edit_precon_forecasts' );
+	             $role->add_cap( 'edit_others_precon_forecasts' );
+	             $role->add_cap( 'edit_published_precon_forecasts' );
+	             $role->add_cap( 'publish_precon_forecasts' );
+	             $role->add_cap( 'delete_others_precon_forecasts' );
+	             $role->add_cap( 'delete_private_precon_forecasts' );
+	             $role->add_cap( 'delete_published_precon_forecasts' );
+		}
+}
+
+//Add Metaboxes
 function add_forecasts_metaboxes() {
     add_meta_box('House', 'House Analysis', 'precon_house_box', 'forecast', 'normal', 'default');
  	add_meta_box('Expert', 'Expert Analytics', 'precon_expert_box', 'forecast', 'normal', 'default');
   	add_meta_box('Community', 'Community Analytics', 'precon_community_box', 'forecast', 'normal', 'default');
 }
 
-
+//Callback for Metaboxes
 function precon_house_box( $object, $box ) { ?>
 	<p>
 		<label for="house">House Analysis</label>
@@ -84,6 +112,7 @@ function precon_community_box( $object, $box ) { ?>
 	</p>
 <?php }
 
+//Callback for Saving Forecast
 function precon_q_save_forecast( $post_id, $post ) {
 
 	if ( !current_user_can( 'edit_post', $post_id ) )
@@ -103,9 +132,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 
 		elseif ( '' == $new_meta_value && $meta_value )
 			delete_post_meta( $post_id, 'House', $meta_value );		
-	}
-
-		
+	}		
 	if ( isset($_POST['expert_box_nonce']) && !wp_verify_nonce( $_POST['expert_box_nonce'], plugin_basename( __FILE__ ) ) ) {
 		return $post_id; 
 	} else {
@@ -121,9 +148,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 		elseif ( '' == $new_meta_value && $meta_value )
 			delete_post_meta( $post_id, 'Expert', $meta_value );
 
-	}
-		
-
+	}		
 	if ( isset($_POST['community_box_nonce']) && !wp_verify_nonce( $_POST['community_box_nonce'], plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
 	} else {
@@ -139,11 +164,9 @@ function precon_q_save_forecast( $post_id, $post ) {
 		elseif ( '' == $new_meta_value && $meta_value )
 			delete_post_meta( $post_id, 'Community', $meta_value );
 	}
-		
-
-
 }
 
+//Process data and output to D3
 function getData($tid, $suffix) {
 	$vaName = 'voteArray' . $suffix;
 	$vc = 'voteCount' . $suffix;
@@ -155,11 +178,10 @@ function getData($tid, $suffix) {
 		foreach($vote_arr as $key => $value) {
 			echo $value / $vote_count[$key] . " ";
 		}
-
 	}
-
 }
 
+//Enqueue Forecast Scripts
 function add_forecast_scripts() {
 	wp_enqueue_script(
 		'forecast',
@@ -170,9 +192,11 @@ function add_forecast_scripts() {
 		'//d3js.org/d3.v3.min.js'
 	);
 }
-
 add_action( 'init', 'add_forecast_scripts' );
 
+//
+//Forms
+//
 function notlogged_form() {
 	echo 
 	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
@@ -215,6 +239,10 @@ function house_form($amount) {
     </form></div>';
 }
 
+
+//
+//Form Validation
+//
 function house_validation($amount) {
 	global $reg_errors;
 	$reg_errors = new WP_Error;
@@ -224,6 +252,9 @@ function house_validation($amount) {
 	}
 }
 
+//
+// Forecast voting main function
+//
 function complete_voting($amount, $tid, $user_level, $intime, $UID) {
 	//three different sets of values, for 3 user levels
 	if($user_level > 2) {
@@ -294,6 +325,9 @@ function complete_voting($amount, $tid, $user_level, $intime, $UID) {
 
 }
 
+//
+// Calls main voting function
+//
 function custom_vote_function($tid, $user_level, $intime, $UID) {
 	global $amount;	
 
@@ -306,18 +340,7 @@ function custom_vote_function($tid, $user_level, $intime, $UID) {
 				$amount = $_POST['amount'];
 
 				complete_voting($amount, $tid, $user_level, $intime, $UID);
-			
 		}
 	}
-	house_form($amount);
-	
-}
-
-add_shortcode( 'pr_vote', 'pr_vote_shortcode' );
- 
-// The callback function that will replace [pr_vote]
-function pr_vote_shortcode() {
-    ob_start();
-    custom_vote_function();
-    return ob_get_clean();
+	house_form($amount);	
 }

@@ -39,7 +39,7 @@ function precon_issue_init() {
 		'show_in_menu'       => true,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'issues' ),
-		'capability_type'    => 'post',
+		'capability_type'    => array('precon_issue', 'precon_issues'),
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => null,
@@ -50,6 +50,33 @@ function precon_issue_init() {
 	);
 
 	register_post_type( 'issue', $args );
+}
+
+//
+//Add editing permissions for Admins
+//
+add_action('admin_init','precon_issue_add_role_caps',999);
+function precon_issue_add_role_caps() {
+		//role array, so we can easily add other roles
+		$roles = array('administrator');
+		
+		// Loop through each role and assign capabilities
+		foreach($roles as $the_role) { 
+
+		     $role = get_role($the_role);
+			
+	             $role->add_cap( 'read' );
+	             $role->add_cap( 'read_precon_issue');
+	             $role->add_cap( 'read_private_precon_issues' );
+	             $role->add_cap( 'edit_precon_issue' );
+	             $role->add_cap( 'edit_precon_issues' );
+	             $role->add_cap( 'edit_others_precon_issues' );
+	             $role->add_cap( 'edit_published_precon_issues' );
+	             $role->add_cap( 'publish_precon_issues' );
+	             $role->add_cap( 'delete_others_precon_issues' );
+	             $role->add_cap( 'delete_private_precon_issues' );
+	             $role->add_cap( 'delete_published_precon_issues' );
+		}
 }
 
 function add_issue_metaboxes() {

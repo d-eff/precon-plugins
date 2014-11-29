@@ -39,7 +39,7 @@ function precon_country_init() {
 		'show_in_menu'       => true,
 		'query_var'          => true,
 		'rewrite'            => array( 'slug' => 'countries' ),
-		'capability_type'    => 'post',
+		'capability_type'    => array('precon_country', 'precon_countries'),
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'menu_position'      => null,
@@ -51,6 +51,34 @@ function precon_country_init() {
 
 	register_post_type( 'country', $args );
 }
+
+//
+//Add editing permissions for Admins
+//
+add_action('admin_init','precon_country_add_role_caps',999);
+function precon_country_add_role_caps() {
+		//role array, so we can easily add other roles
+		$roles = array('administrator');
+		
+		// Loop through each role and assign capabilities
+		foreach($roles as $the_role) { 
+
+		     $role = get_role($the_role);
+			
+	             $role->add_cap( 'read' );
+	             $role->add_cap( 'read_precon_country');
+	             $role->add_cap( 'read_private_precon_countries' );
+	             $role->add_cap( 'edit_precon_country' );
+	             $role->add_cap( 'edit_precon_countries' );
+	             $role->add_cap( 'edit_others_precon_countries' );
+	             $role->add_cap( 'edit_published_precon_countries' );
+	             $role->add_cap( 'publish_precon_countries' );
+	             $role->add_cap( 'delete_others_precon_countries' );
+	             $role->add_cap( 'delete_private_precon_countries' );
+	             $role->add_cap( 'delete_published_precon_countries' );
+		}
+}
+
 
 function add_country_metaboxes() {
    add_meta_box('info_boxes', 'Additional Info', 'precon_country_boxes', 'Country', 'normal', 'default');
