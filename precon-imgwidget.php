@@ -95,11 +95,11 @@
         }
     }
     function precon_imgwidget_enqueue_scripts(){
-        wp_enqueue_script('precon-mepload', plugins_url() . '/precon/precon-mepload.js');
+        wp_enqueue_script('precon-mepload', plugins_url() . '/precon-plugins/precon-mepload.js');
         wp_enqueue_media();
     }
     function precon_imgwidget_enqueue_style() {
-        wp_enqueue_style('precon-image-style', plugins_url() . '/precon/precon-imgstyle.css');
+        wp_enqueue_style('precon-image-style', plugins_url() . '/precon-plugins/precon-imgstyle.css');
     }
     add_action( 'widgets_init', create_function('', 'return register_widget("precon_widget_image");') );
 
