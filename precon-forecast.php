@@ -25,7 +25,7 @@ function precon_forecast_install() {
 
 	$sql = "CREATE TABLE $table_name (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		postid mediumint(9) unsigned NOT NULL default '0',
+		postid mediumint(9) unsigned NOT NULL UNIQUE default '0',
 		UNIQUE KEY id (id)
 	) $charset_collate;";
 
@@ -34,22 +34,45 @@ function precon_forecast_install() {
 
 	add_option( 'precon_db_version', $precon_db_version );
 
-    $timeoffset = strtotime('midnight')+(5*HOUR_IN_SECONDS)-1;
+    $timeoffset = strtotime('midnight')+(4.9*HOUR_IN_SECONDS);
     if($timeoffset < time()) $timeoffset+(24*HOUR_IN_SECONDS);
     wp_schedule_event($timeoffset, 'daily', 'precon_forecast_cron_hook');
 }
 register_activation_hook( __FILE__, 'precon_forecast_install' );
 
-
-// function precon_forecast_uninstall() {
-// 	global $wpdb;
-// 	$table_name = $wpdb->prefix . 'preconforecasts';
-// 	$wpdb->query( "DROP TABLE $table_name" );
-// }
-// register_uninstall_hook( __FILE__, 'precon_forecast_uninstall');
-
 function precon_forecast_cron_hook() {
+	global $wpdb;
 
+	$table_name = $wpdb->prefix . 'preconforecasts';
+
+	$forecasts = $wpdb->get_results("
+		SELECT postid
+		FROM $table_name;
+	");
+
+	if($forecasts){
+		foreach ($forecasts as $value) {
+			$post = get_post(intval($value));
+			$pid = $post->post_id;
+			$date = date('m/d/y');
+
+			$runningAverageAdmin = get_post_meta($pid, 'runningAverageAdmin', true);
+			$runningAverageExpert = get_post_meta($pid, 'runningAverageExpert', true);
+			$runningAverageSub = get_post_meta($pid, 'runningAverageSub', true);
+
+			$historicalVotesAdmin = get_post_meta($pid, 'historicalVotesAdmin', true);
+			$historicalVotesExpert = get_post_meta($pid, 'historicalVotesExpert', true);
+			$historicalVotesSub = get_post_meta($pid, 'historicalVotesSub', true);
+
+			$historicalVotesAdmin[$date] = intval($runningAverageAdmin);
+			$historicalVotesExpert[$date] = intval($runningAverageExpert);
+			$historicalVotesSub[$date] = intval($runningAverageSub);
+
+			update_post_meta($pid, 'historicalVotesAdmin', $historicalVotesAdmin);
+			update_post_meta($pid, 'historicalVotesExpert', $historicalVotesExpert);
+			update_post_meta($pid, 'historicalVotesSub', $historicalVotesSub);
+		}
+	}
 }
 
 add_action( 'init', 'precon_forecast_init' );
@@ -248,18 +271,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 		//add to update list
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'preconforecasts';
-		$wpdb->insert($table_name, array($post_id), array('%s'));
-	}
-
-	$table_name = $wpdb->prefix . 'preconforecasts';
-	$forecasts = $wpdb->get_results("
-		SELECT postid
-		FROM $table_name;
-	");
-	if($forecasts){
-	foreach ($forecasts as $value) {
-		echo $value; 
-	}
+		$wpdb->insert($table_name, array('postid' => $post_id), '%s');
 	}
 
 }
@@ -268,17 +280,20 @@ function precon_q_save_forecast( $post_id, $post ) {
 //Process data and output to graphing lib
 //
 function precon_forecast_getData($tid, $suffix) {
-	$vaName = 'voteArray' . $suffix;
-	$vc = 'voteCount' . $suffix;
-	$vote_arr = get_post_meta($tid, $vaName, true);
-	$vote_count = get_post_meta($tid, $vc, true);
+	$runningAverageMetaName = 'runningAverage' . $suffix;
+	$historyMetaName = 'historicalVotes' . $suffix;
 
-	if(!empty($vote_count) && !empty($vote_arr)) {
+	$runningAverage = get_post_meta($tid, $runningAverageMetaName, true);
+	$history = get_post_meta($tid, $historyMetaName, true);
 
-		foreach($vote_arr as $key => $value) {
-			echo $value / $vote_count[$key] . " ";
+	$output = '';
+	if(!empty($history)) {
+		foreach ($history as $key => $value) {
+			$output .= $key . ' ' . $value . ' ';
 		}
 	}
+	$output .= date('m/d/y') . ' ' . $runningAverage;
+	echo $output;
 }
 
 //Enqueue Forecast Scripts
