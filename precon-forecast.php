@@ -9,10 +9,54 @@
  * Text Domain: precon-forecast
  */
 
+global $precon_db_version;
+$precon_db_version = '1.0';
+
+//
+// Install function. Creates DB and sets up cron job.
+//
+function precon_forecast_install() {
+	global $wpdb;
+	global $precon_db_version;
+
+	$table_name = $wpdb->prefix . 'preconforecasts';
+	
+	$charset_collate = $wpdb->get_charset_collate();
+
+	$sql = "CREATE TABLE $table_name (
+		id mediumint(9) NOT NULL AUTO_INCREMENT,
+		postid mediumint(9) unsigned NOT NULL default '0',
+		UNIQUE KEY id (id)
+	) $charset_collate;";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
+
+	add_option( 'precon_db_version', $precon_db_version );
+
+    $timeoffset = strtotime('midnight')+(5*HOUR_IN_SECONDS);
+    if($timeoffset < time()) $timeoffset+(24*HOUR_IN_SECONDS);
+    wp_schedule_event($timeoffset, 'daily', 'precon_forecast_cron_hook');
+}
+register_activation_hook( __FILE__, 'precon_forecast_install' );
+
+
+// function precon_forecast_uninstall() {
+// 	global $wpdb;
+// 	$table_name = $wpdb->prefix . 'preconforecasts';
+// 	$wpdb->query( "DROP TABLE $table_name" );
+// }
+// register_uninstall_hook( __FILE__, 'precon_forecast_uninstall');
+
+function precon_forecast_cron_hook() {
+
+}
+
 add_action( 'init', 'precon_forecast_init' );
 add_action( 'save_post_forecast', 'precon_q_save_forecast', 10, 2 );
-
+//
 //Create Forecast Post Type
+//
 function precon_forecast_init() {
 	$labels = array(
 		'name'               => _x( 'Forecast', 'post type general name', 'precon-forecast' ),
@@ -45,7 +89,7 @@ function precon_forecast_init() {
 		'menu_position'      => null,
 		'menu_icon'			 => 'dashicons-chart-line',
 		'supports'           => array( 'title', 'editor', 'thumbnail', 'tags', 'page-attributes'),
-		'register_meta_box_cb' => 'add_forecasts_metaboxes',
+		'register_meta_box_cb' => 'precon_add_forecasts_metaboxes',
 		'taxonomies' => array( 'post_tag', 'category'), 
 	);
 
@@ -73,6 +117,7 @@ function precon_forecast_add_role_caps() {
 	             $role->add_cap( 'edit_others_precon_forecasts' );
 	             $role->add_cap( 'edit_published_precon_forecasts' );
 	             $role->add_cap( 'publish_precon_forecasts' );
+	             $role->add_cap( 'delete_precon_forecast' );
 	             $role->add_cap( 'delete_others_precon_forecasts' );
 	             $role->add_cap( 'delete_private_precon_forecasts' );
 	             $role->add_cap( 'delete_published_precon_forecasts' );
@@ -80,7 +125,7 @@ function precon_forecast_add_role_caps() {
 }
 
 //Add Metaboxes
-function add_forecasts_metaboxes() {
+function precon_add_forecasts_metaboxes() {
     add_meta_box('House', 'House Analysis', 'precon_house_box', 'forecast', 'normal', 'default');
  	add_meta_box('Expert', 'Expert Analytics', 'precon_expert_box', 'forecast', 'normal', 'default');
   	add_meta_box('Community', 'Community Analytics', 'precon_community_box', 'forecast', 'normal', 'default');
@@ -164,10 +209,65 @@ function precon_q_save_forecast( $post_id, $post ) {
 		elseif ( '' == $new_meta_value && $meta_value )
 			delete_post_meta( $post_id, 'Community', $meta_value );
 	}
+
+
+	//Initialize voting stuff
+	$voters = get_post_meta($post_id, 'votersExpert', true);
+	
+	//If we don't have a voters list, we can assume we're unitialized
+	if(empty($voters)){
+		//initialize post meta
+		$votersAdmin = array();
+		$votersExpert = array();
+		$votersSub = array();
+		add_post_meta($post_id, 'votersAdmin', $votersAdmin, true);
+		add_post_meta($post_id, 'votersExpert', $votersExpert, true);
+		add_post_meta($post_id, 'votersSub', $votersSub, true);
+
+		$dailyTotalAdmin = 0;
+		$dailyTotalExpert = 0;
+		$dailyTotalSub = 0;
+		add_post_meta($post_id, 'dailyTotalAdmin', $dailyTotalAdmin, true);
+		add_post_meta($post_id, 'dailyTotalExpert', $dailyTotalExpert, true);
+		add_post_meta($post_id, 'dailyTotalSub', $dailyTotalSub, true);
+
+		$runningAverageAdmin = 0;
+		$runningAverageExpert = 0;
+		$runningAverageSub = 0;
+		add_post_meta($post_id, 'runningAverageAdmin', $runningAverageAdmin, true);
+		add_post_meta($post_id, 'runningAverageExpert', $runningAverageExpert, true);
+		add_post_meta($post_id, 'runningAverageSub', $runningAverageSub, true);
+
+		$historicalVotesAdmin = array();
+		$historicalVotesExpert = array();
+		$historicalVotesSub = array();
+		add_post_meta($post_id, 'historicalVotesAdmin', $historicalVotesAdmin, true);
+		add_post_meta($post_id, 'historicalVotesExpert', $historicalVotesExpert, true);
+		add_post_meta($post_id, 'historicalVotesSub', $historicalVotesSub, true);
+
+		//add to update list
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'preconforecasts';
+		$wpdb->insert($table_name, array($post_id), array('%s'));
+	}
+
+	$table_name = $wpdb->prefix . 'preconforecasts';
+	$forecasts = $wpdb->get_results("
+		SELECT postid
+		FROM $table_name;
+	");
+	if($forecasts){
+	foreach ($forecasts as $value) {
+		echo $value; 
+	}
+	}
+
 }
 
-//Process data and output to D3
-function getData($tid, $suffix) {
+//
+//Process data and output to graphing lib
+//
+function precon_forecast_getData($tid, $suffix) {
 	$vaName = 'voteArray' . $suffix;
 	$vc = 'voteCount' . $suffix;
 	$vote_arr = get_post_meta($tid, $vaName, true);
@@ -258,68 +358,34 @@ function house_validation($amount) {
 function complete_voting($amount, $tid, $user_level, $intime, $UID) {
 	//three different sets of values, for 3 user levels
 	if($user_level > 2) {
-		$suffix = 'admin';
+		$suffix = 'Admin';
 	} elseif ($user_level > 0) {
-		$suffix = 'auth';
+		$suffix = 'Expert';
 	} else {
-		$suffix = 'sub';
+		$suffix = 'Sub';
 	}
-	$vaName = 'voteArray' . $suffix;
-	$vc = 'voteCount' . $suffix;
-	$last = 'lastTime' . $suffix;
 
-	$new_meta_value = intval(stripslashes( $amount ));
+	$votersMetaName = 'voters' . $suffix;
+	$dailyTotalMetaName = 'dailyTotal' . $suffix;
+	$runningAverageMetaName = 'runningAverage' . $suffix;
+	$new_vote = intval(stripslashes( $amount ));
 
-	$lastTime = intval(get_post_meta($tid, $last, true));
-	$vote_arr = get_post_meta($tid, $vaName, true);
-	$vote_count = get_post_meta($tid, $vc, true);
-	$voters = get_post_meta($tid, 'voters', true);
-	$interval = 86400;
+	$voters = get_post_meta($tid, $votersMetaName, true);
+	$dailyTotal = intval(get_post_meta($tid, $dailyTotal, true));
 
-	$timeStamp = current_time('timestamp');
-	$difference = $timeStamp - $lastTime;
+	if(array_key_exists($UID, $voters)) {
+		$old_vote = $voters[$UID];
+		$dailyTotal -= $old_vote;
+	} 
 
-	//if there's no meta, the graph is unitialized
-	if(empty($lastTime) || empty($vote_arr) || empty($vote_count)) {
-		$lastTime = $intime;
-		$vote_arr = array(strval($lastTime-$interval) => $new_meta_value,
-								strval($lastTime) => $new_meta_value);
-		$vote_count = array(strval($lastTime-$interval) => 1,
-							strval($lastTime) => 1);
-		$voters = array($UID => $new_meta_value);
+	$voters[$UID] = $new_vote;
+	$dailyTotal += $new_vote;
 
-		add_post_meta($tid, $voters, true);
-		add_post_meta($tid, $last, $lastTime, true);
-		add_post_meta($tid, $vaName, $vote_arr, true);
-		add_post_meta($tid, $vc, $vote_count, true); 
-	//if the current time is less than one day ahead
-	} elseif ($difference < $interval) {
-		$vote_mod = 0;
-		$vc_mod = 0;
-		if(array_key_exists($UID, $voters)) {
-			$vc_mod = -1;
-			$vote_mod = $voters[$UID] - $new_meta_value; 
-		}
-		$vote_arr[strval($lastTime)] = $vote_arr[strval($lastTime)] + $new_meta_value + $vote_mod;
-		$vote_count[strval($lastTime)] = $vote_count[strval($lastTime)] + 1 + $vc_mod;
-		$voters[$UID] = $new_meta_value;
-		update_post_meta($tid, 'voters', $voters);
-		update_post_meta($tid, $vaName, $vote_arr);
-		update_post_meta($tid, $last, $lastTime);
-		update_post_meta($tid, $vc, $vote_count);
-	//if there's a gap of at least one day
-	} elseif ($difference >= $interval) {
-		for($x = $lastTime + $interval; $x < $timeStamp; $x += $interval) {
-			$vote_arr[strval($x)] = $vote_arr[strval($lastTime)];
-			$vote_count[strval($x)] = $vote_count[strval($lastTime)];
-		}
-		$lastTime = $timeStamp - ($difference % $interval);
-		$vote_arr[strval($lastTime)] = $new_meta_value;
-		$vote_count[strval($lastTime)] = 1;
-		update_post_meta($tid, $vaName, $vote_arr);
-		update_post_meta($tid, $last, $lastTime);
-		update_post_meta($tid, $vc, $vote_count);
-	}
+	$runningAverage = $dailyTotal/count($voters);
+	
+	update_post_meta($tid, $votersMetaName, $voters);
+	update_post_meta($tid, $dailyTotalMetaName, $dailyTotal);
+	update_post_meta($tid, $runningAverageMetaName, $runningAverage);
 
 	$_POST['amount'] = '--';
 

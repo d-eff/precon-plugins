@@ -73,6 +73,7 @@ function precon_issue_add_role_caps() {
 	             $role->add_cap( 'edit_others_precon_issues' );
 	             $role->add_cap( 'edit_published_precon_issues' );
 	             $role->add_cap( 'publish_precon_issues' );
+	             $role->add_cap( 'delete_precon_issue' );
 	             $role->add_cap( 'delete_others_precon_issues' );
 	             $role->add_cap( 'delete_private_precon_issues' );
 	             $role->add_cap( 'delete_published_precon_issues' );

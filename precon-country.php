@@ -73,6 +73,7 @@ function precon_country_add_role_caps() {
 	             $role->add_cap( 'edit_others_precon_countries' );
 	             $role->add_cap( 'edit_published_precon_countries' );
 	             $role->add_cap( 'publish_precon_countries' );
+	             $role->add_cap( 'delete_precon_country' );
 	             $role->add_cap( 'delete_others_precon_countries' );
 	             $role->add_cap( 'delete_private_precon_countries' );
 	             $role->add_cap( 'delete_published_precon_countries' );
