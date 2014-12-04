@@ -279,6 +279,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 //
 //Process data and output to graphing lib
 //
+//MOD THIS TO OUTPUT DATE AND VAL SEPARATELYx
 function precon_forecast_getData($tid, $suffix) {
 	$runningAverageMetaName = 'runningAverage' . $suffix;
 	$historyMetaName = 'historicalVotes' . $suffix;
@@ -286,14 +287,18 @@ function precon_forecast_getData($tid, $suffix) {
 	$runningAverage = get_post_meta($tid, $runningAverageMetaName, true);
 	$history = get_post_meta($tid, $historyMetaName, true);
 
-	$output = '';
+	$dates = '';
+	$vals = '';
 	if(!empty($history)) {
 		foreach ($history as $key => $value) {
-			$output .= $key . ' ' . $value . ' ';
+			$dates .= $key . ' ';
+			$vals .= $value . ' ';
 		}
 	}
-	$output .= date('m/d/y') . ' ' . $runningAverage;
-	echo $output;
+	$dates .= date('m/d/y'); 
+	$vals .= $runningAverage;
+	echo $dates . '+';
+	echo $vals;
 }
 
 //Enqueue Forecast Scripts
@@ -303,8 +308,8 @@ function add_forecast_scripts() {
 		plugins_url( '/precon-forecast.js' , __FILE__ )
 	);
 	wp_enqueue_script(
-		'd3',
-		'//d3js.org/d3.v3.min.js'
+		'charts',
+		plugins_url('/Chart.min.js', __FILE__ )
 	);
 }
 add_action( 'init', 'add_forecast_scripts' );
@@ -386,8 +391,8 @@ function complete_voting($amount, $tid, $user_level, $intime, $UID) {
 	$new_vote = intval(stripslashes( $amount ));
 
 	$voters = get_post_meta($tid, $votersMetaName, true);
-	$dailyTotal = intval(get_post_meta($tid, $dailyTotal, true));
-
+	$dailyTotal = intval(get_post_meta($tid, $dailyTotalMetaName, true));
+	
 	if(array_key_exists($UID, $voters)) {
 		$old_vote = $voters[$UID];
 		$dailyTotal -= $old_vote;
