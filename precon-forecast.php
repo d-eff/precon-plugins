@@ -52,8 +52,8 @@ function precon_forecast_cron_hook() {
 
 	if($forecasts){
 		foreach ($forecasts as $value) {
-			$post = get_post(intval($value));
-			$pid = $post->post_id;
+			$post = get_post($value);
+			$pid = intval($post->postid);
 			$date = date('m/d/y');
 
 			$runningAverageAdmin = get_post_meta($pid, 'runningAverageAdmin', true);
@@ -71,8 +71,10 @@ function precon_forecast_cron_hook() {
 			update_post_meta($pid, 'historicalVotesAdmin', $historicalVotesAdmin);
 			update_post_meta($pid, 'historicalVotesExpert', $historicalVotesExpert);
 			update_post_meta($pid, 'historicalVotesSub', $historicalVotesSub);
+
 		}
 	}
+
 }
 
 add_action( 'init', 'precon_forecast_init' );
@@ -279,7 +281,6 @@ function precon_q_save_forecast( $post_id, $post ) {
 //
 //Process data and output to graphing lib
 //
-//MOD THIS TO OUTPUT DATE AND VAL SEPARATELYx
 function precon_forecast_getData($tid, $suffix) {
 	$runningAverageMetaName = 'runningAverage' . $suffix;
 	$historyMetaName = 'historicalVotes' . $suffix;
@@ -299,6 +300,7 @@ function precon_forecast_getData($tid, $suffix) {
 	$vals .= $runningAverage;
 	echo $dates . '+';
 	echo $vals;
+
 }
 
 //Enqueue Forecast Scripts
