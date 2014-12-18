@@ -36,9 +36,30 @@ function precon_forecast_install() {
 
     $timeoffset = strtotime('midnight')+(4.9*HOUR_IN_SECONDS);
     if($timeoffset < time()) $timeoffset+(24*HOUR_IN_SECONDS);
-    wp_schedule_event($timeoffset, 'daily', 'precon_forecast_cron_hook');
+    wp_schedule_event($timeoffset, 'daily', 'preconforecastcronhookact');
 }
 register_activation_hook( __FILE__, 'precon_forecast_install' );
+
+add_action('preconforecastcronhookact', 'precon_forecast_cron_hook');
+
+register_deactivation_hook( __FILE__, 'precon_forecast_deactivation' );
+
+/**
+ * On deactivation, remove all functions from the scheduled action hook.
+ */
+function precon_forecast_deactivation() {
+	wp_clear_scheduled_hook( 'preconforecastcronhookact' );
+
+	global $wpdb;
+	global $precon_db_version;
+
+	$table_name = $wpdb->prefix . 'preconforecasts';
+	
+	$sql = "DROP TABLE $table_name;";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
+}
 
 function precon_forecast_cron_hook() {
 	global $wpdb;
@@ -54,7 +75,7 @@ function precon_forecast_cron_hook() {
 		foreach ($forecasts as $value) {
 			$post = get_post($value);
 			$pid = intval($post->postid);
-			$date = date('m/d/y');
+			$date = date('m/d/y', current_time('timestamp', $gmt = 0));
 
 			$runningAverageAdmin = get_post_meta($pid, 'runningAverageAdmin', true);
 			$runningAverageExpert = get_post_meta($pid, 'runningAverageExpert', true);
@@ -296,7 +317,8 @@ function precon_forecast_getData($tid, $suffix) {
 			$vals .= $value . ' ';
 		}
 	}
-	$dates .= date('m/d/y'); 
+
+	$dates .= date('m/d/y', current_time('timestamp', $gmt = 0));
 	$vals .= $runningAverage;
 	echo $dates . '+';
 	echo $vals;
