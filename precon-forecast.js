@@ -153,21 +153,48 @@ function drawGraph(dat, x) {
   
   var dates = dat[0].split(' ');
   var vals = dat[1].split(' ').map(function(x){ return parseInt(x); });
-  // var dates=["4/10/12", "4/11/12", "4/12/12", "4/10/12", "4/11/12", "4/12/12", "4/12/12", "4/12/12"];
-  // var vals = [50, 75, 60, 50, 75, 60, 20, 80];
+   // var dates=["4/10/12", "4/11/12", "4/12/12", "4/10/12", "4/11/12", "4/12/12"];
+   // var vals = [50, 75, 60, 50, 75, 60];
 
   var dlength = dates.length,
       vlength = vals.length;
-  for(var x = 0; x < (7 - dlength); x++) {
-    var extraDays = x+1;
-    extraDays += "  day";
-    dates.push(extraDays);
-  }
-  for(var x = vlength; x < 7; x++) {
-    vals.push(0);
-  }
+  if(dlength < 7) {
+    fakeData = ['','','','','','',''];
+    for(var x = 0; x < (7 - dlength); x++) {
+        var extraDays = x+1;
+        extraDays += "  day";
+        dates.push(extraDays);
 
-  var data = {
+        fakeData[dlength[x] = 0];
+    }
+    var data = {
+    labels: dates,
+    datasets: [
+        {
+            label: prefix,
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: vals
+        },
+        {
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: fakeData
+        }
+      ]
+    };
+
+  } else {
+
+    var data = {
     labels: dates,
     datasets: [
         {
@@ -181,7 +208,10 @@ function drawGraph(dat, x) {
             data: vals
         }
     ]
-  };
+    };
+  }
+  
+  
 
   var myLineChart = new Chart(ctx).Line(data, chartOptions);
 
