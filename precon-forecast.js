@@ -32,9 +32,9 @@ function drawGraph(dat, x) {
 
     // ** Required if scaleOverride is true **
     // Number - The number of steps in a hard coded scale
-    scaleSteps: 10,
+    scaleSteps: 5,
     // Number - The value jump in the hard coded scale
-    scaleStepWidth: 10,
+    scaleStepWidth: 20,
     // Number - The scale starting value
     scaleStartValue: 0,
 
@@ -48,7 +48,7 @@ function drawGraph(dat, x) {
     scaleShowLabels: true,
 
     // Interpolated JS string - can access value
-    scaleLabel: "<%=value%>",
+    scaleLabel: "<%=value%>%",
 
     // Boolean - Whether the scale should stick to integers, not floats even if drawing space is there
     scaleIntegersOnly: true,
@@ -210,11 +210,7 @@ function drawGraph(dat, x) {
     ]
     };
   }
-  
-  
-
-  var myLineChart = new Chart(ctx).Line(data, chartOptions);
-
+ 
   var chartOptions = {
         ///Boolean - Whether grid lines are shown across the chart
     scaleShowGridLines : true,
@@ -235,13 +231,13 @@ function drawGraph(dat, x) {
     pointDot : true,
 
     //Number - Radius of each point dot in pixels
-    pointDotRadius : 4,
+    pointDotRadius : 3,
 
     //Number - Pixel width of point dot stroke
     pointDotStrokeWidth : 1,
 
     //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-    pointHitDetectionRadius : 20,
+    pointHitDetectionRadius : 2,
 
     //Boolean - Whether to show a stroke for datasets
     datasetStroke : true,
@@ -256,6 +252,7 @@ function drawGraph(dat, x) {
     legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
   };
 
+  var myLineChart = new Chart(ctx).Line(data, chartOptions);
  
 };
 
