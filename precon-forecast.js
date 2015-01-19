@@ -151,14 +151,15 @@ function drawGraph(dat, x) {
 
   var ctx = document.getElementById(chartName).getContext("2d");
   
+  var dots = 12;
+  var gap = Math.floor(dots/dat[0].split(' ').length);
   var dates = dat[0].split(' ').map(function(x, index){
-    if(index % 2 === 0) {
-        return x;
-} else {
-    return " ";
-}
-    
-   });
+    if(index % gap === 0) {
+      return x;
+    } else {
+      return " ";
+    }
+  });
   var vals = dat[1].split(' ').map(function(x){ return parseInt(x); });
    // var dates=["4/10/12", "4/11/12", "4/12/12", "4/10/12", "4/11/12", "4/12/12"];
    // var vals = [50, 75, 60, 50, 75, 60];

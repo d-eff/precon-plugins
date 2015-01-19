@@ -348,7 +348,7 @@ function notlogged_form() {
 	</div>';
 }
 
-function house_form($amount) {
+function house_form($amount, $UID) {
 	echo 
 	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
 	 <p class="voteInstr">Submit your forecast here. You can update your forecast during the day, and only your last submission will count for that day’s forecast.</p>
@@ -380,7 +380,9 @@ function house_form($amount) {
    	</select>
    		<input type="submit" name="submit" value="Submit" class="forecastFormButton"/>
    		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
-    </form></div>';
+    </form>
+    <p>Your Current Forecast:</p>
+    </div>';
 }
 
 
@@ -452,5 +454,5 @@ function custom_vote_function($tid, $user_level, $intime, $UID) {
 				complete_voting($amount, $tid, $user_level, $intime, $UID);
 		}
 	}
-	house_form($amount);	
+	house_form($amount, $UID);	
 }
