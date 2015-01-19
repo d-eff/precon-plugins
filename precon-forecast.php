@@ -382,7 +382,7 @@ function house_form($amount, $UID, $suffix, $tid) {
    		<input type="submit" name="submit" value="Submit" class="forecastFormButton"/>
    		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
     </form>
-    <p>Your Current Forecast:' . get_post_meta($tid, $votersMetaName, true)[$UID] . '</p>
+    <p class="voteInstr">Your Current Forecast: ' . get_post_meta($tid, $votersMetaName, true)[$UID] . '</p>
     </div>';
 }
 
