@@ -151,8 +151,8 @@ function drawGraph(dat, x) {
 
   var ctx = document.getElementById(chartName).getContext("2d");
   
-  var dots = 12;
-  var gap = Math.floor(dots/dat[0].split(' ').length);
+  var dots = 10;
+  var gap = Math.floor(at[0].split(' ').length/dots);
   var dates = dat[0].split(' ').map(function(x, index){
     if(index % gap === 0) {
       return x;
