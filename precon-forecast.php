@@ -350,6 +350,14 @@ function notlogged_form() {
 
 function house_form($amount, $UID, $suffix, $tid) {
 	$votersMetaName = 'voters' . $suffix;
+	$vote = get_post_meta($tid, $votersMetaName, true);
+
+	if(!empty($vote)) {
+		$current = 'Your current forecast: ' . $vote[$UID];
+	} else {
+		$current = 'You do not currently have a forecast.';
+	}
+
 	echo 
 	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
 	 <p class="voteInstr">Submit your forecast here. You can update your forecast during the day, and only your last submission will count for that day’s forecast.</p>
@@ -382,7 +390,7 @@ function house_form($amount, $UID, $suffix, $tid) {
    		<input type="submit" name="submit" value="Submit" class="forecastFormButton"/>
    		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
     </form>
-    <p class="voteInstr">Your Current Forecast: ' . get_post_meta($tid, $votersMetaName, true)[$UID] . '</p>
+    <p class="voteInstr">' . $current . '</p>
     </div>';
 }
 
