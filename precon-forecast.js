@@ -152,7 +152,7 @@ function drawGraph(dat, x) {
   var ctx = document.getElementById(chartName).getContext("2d");
   
   var dots = 10;
-  var gap = Math.floor(at[0].split(' ').length/dots);
+  var gap = Math.floor(dat[0].split(' ').length/dots);
   var dates = dat[0].split(' ').map(function(x, index){
     if(index % gap === 0) {
       return x;
