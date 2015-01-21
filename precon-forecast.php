@@ -99,7 +99,7 @@ function precon_forecast_cron_hook() {
 }
 
 add_action( 'init', 'precon_forecast_init' );
-add_action( 'save_post_forecast', 'precon_q_save_forecast', 10, 2 );
+add_action( 'save_post_forecast', 'precon_q_save_forecast', 99, 2 );
 //
 //Create Forecast Post Type
 //
@@ -208,37 +208,43 @@ function precon_q_save_forecast( $post_id, $post ) {
 	if ( !current_user_can( 'edit_post', $post_id ) )
 		return $post_id;
 
-	$meta_value = get_post_meta( $post_id, 'House', true );
-	$new_meta_value = stripslashes( $_POST['house'] );
+   	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return $post_id;
+    }
 
-	if ( $new_meta_value && '' == $meta_value ) {
-		add_post_meta( $post_id, 'House', $new_meta_value, true );
-	} elseif ( $new_meta_value != $meta_value ) {
-		update_post_meta( $post_id, 'House', $new_meta_value );
-	} elseif ( '' == $new_meta_value && $meta_value ) {
-		delete_post_meta( $post_id, 'House', $meta_value );
-	}		
+    if(isset($_POST)) {
+		$meta_value = get_post_meta( $post_id, 'House', true );
+		$new_meta_value = stripslashes( $_POST['house'] );
 
-	$meta_value = get_post_meta( $post_id, 'Expert', true );
-	$new_meta_value = stripslashes( $_POST['expert'] );
+		if ( $new_meta_value && '' == $meta_value ) {
+			add_post_meta( $post_id, 'House', $new_meta_value, true );
+		} elseif ( $new_meta_value != $meta_value ) {
+			update_post_meta( $post_id, 'House', $new_meta_value );
+		} elseif ( '' == $new_meta_value && $meta_value ) {
+			delete_post_meta( $post_id, 'House', $meta_value );
+		}		
 
-	if ( $new_meta_value && '' == $meta_value ) {
-		add_post_meta( $post_id, 'Expert', $new_meta_value, true );
-	} elseif ( $new_meta_value != $meta_value ) {
-		update_post_meta( $post_id, 'Expert', $new_meta_value );
-	} elseif ( '' == $new_meta_value && $meta_value ) {
-		delete_post_meta( $post_id, 'Expert', $meta_value );
-	}
-	
-	$meta_value = get_post_meta( $post_id, 'Community', true );
-	$new_meta_value = stripslashes( $_POST['community'] );
+		$meta_value = get_post_meta( $post_id, 'Expert', true );
+		$new_meta_value = stripslashes( $_POST['expert'] );
 
-	if ( $new_meta_value && '' == $meta_value ) {
-		add_post_meta( $post_id, 'Community', $new_meta_value, true );
-	} elseif ( $new_meta_value != $meta_value ) {
-		update_post_meta( $post_id, 'Community', $new_meta_value );
-	} elseif ( '' == $new_meta_value && $meta_value ) {
-		delete_post_meta( $post_id, 'Community', $meta_value );
+		if ( $new_meta_value && '' == $meta_value ) {
+			add_post_meta( $post_id, 'Expert', $new_meta_value, true );
+		} elseif ( $new_meta_value != $meta_value ) {
+			update_post_meta( $post_id, 'Expert', $new_meta_value );
+		} elseif ( '' == $new_meta_value && $meta_value ) {
+			delete_post_meta( $post_id, 'Expert', $meta_value );
+		}
+
+		$meta_value = get_post_meta( $post_id, 'Community', true );
+		$new_meta_value = stripslashes( $_POST['community'] );
+
+		if ( $new_meta_value && '' == $meta_value ) {
+			add_post_meta( $post_id, 'Community', $new_meta_value, true );
+		} elseif ( $new_meta_value != $meta_value ) {
+			update_post_meta( $post_id, 'Community', $new_meta_value );
+		} elseif ( '' == $new_meta_value && $meta_value ) {
+			delete_post_meta( $post_id, 'Community', $meta_value );
+		}
 	}
 
 
