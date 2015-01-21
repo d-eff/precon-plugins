@@ -93,6 +93,46 @@ function precon_forecast_cron_hook() {
 			update_post_meta($pid, 'historicalVotesExpert', $historicalVotesExpert);
 			update_post_meta($pid, 'historicalVotesSub', $historicalVotesSub);
 
+			$votersAdmin = get_post_meta($pid, 'votersAdmin', true);
+			$votersExpert = get_post_meta($pid, 'votersExpert', true);
+			$votersSub = get_post_meta($pid, 'votersSub', true);
+
+			$votersExpiryAdmin = get_post_meta($pid, 'votersExpiryAdmin', true);
+			$votersExpiryExpert = get_post_meta($pid, 'votersExpiryExpert', true);
+			$votersExpirySub = get_post_meta($pid, 'votersExpirySub', true);
+			foreach ($votersExpiryAdmin as $key => $votersExp) {
+				$votersExpiryAdmin[$key]--;
+				if($votersExpiryAdmin[$key] <= 0) {
+					$vote = $votersAdmin[$key];
+					unset($votersAdmin[$key]);
+					$dailyTotal = intval(get_post_meta($pid, 'dailyTotalAdmin', true));
+					$dailyTotal -= $vote;
+					update_post_meta($pid, 'dailyTotalAdmin', $dailyTotal);
+					unset($votersExpiryAdmin[$key]);
+				}
+			}
+			foreach ($votersExpiryExpert as $key => $votersExp) {
+				$votersExpiryExpert[$key]--;
+				if($votersExpiryExpert[$key] <= 0) {
+					$vote = $votersExpert[$key];
+					unset($votersExpert[$key]);
+					$dailyTotal = intval(get_post_meta($pid, 'dailyTotalExpert', true));
+					$dailyTotal -= $vote;
+					update_post_meta($pid, 'dailyTotalAdmin', $dailyTotal);
+					unset($votersExpiryAdmin[$key]);
+				}
+			}
+			foreach ($votersExpirySub as $key => $votersExp) {
+				$votersExpirySub[$key]--;
+				if($votersExpirySub[$key] <= 0) {
+					$vote = $votersSub[$key];
+					unset($votersSub[$key]);
+					$dailyTotal = intval(get_post_meta($pid, 'dailyTotalSub', true));
+					$dailyTotal -= $vote;
+					update_post_meta($pid, 'dailyTotalSub', $dailyTotal);
+					unset($votersExpirySub[$key]);
+				}
+			}
 		}
 	}
 
@@ -262,6 +302,13 @@ function precon_q_save_forecast( $post_id, $post ) {
 		add_post_meta($post_id, 'votersExpert', $votersExpert, true);
 		add_post_meta($post_id, 'votersSub', $votersSub, true);
 
+		$votersExpiryAdmin = array();
+		$votersExpiryExpert = array();
+		$votersExpirySub = array();
+		add_post_meta($post_id, 'votersExpiryAdmin', $votersAdmin, true);
+		add_post_meta($post_id, 'votersExpiryExpert', $votersExpert, true);
+		add_post_meta($post_id, 'votersExpirySub', $votersSub, true);
+
 		$dailyTotalAdmin = 0;
 		$dailyTotalExpert = 0;
 		$dailyTotalSub = 0;
@@ -407,9 +454,11 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	$votersMetaName = 'voters' . $suffix;
 	$dailyTotalMetaName = 'dailyTotal' . $suffix;
 	$runningAverageMetaName = 'runningAverage' . $suffix;
+	$votersExpiryMetaName = 'votersExpiry' . $suffix;
 	$new_vote = intval(stripslashes( $amount ));
 
 	$voters = get_post_meta($tid, $votersMetaName, true);
+	$votersExpiry = get_post_meta($tid, $votersExpiryMetaName, true);
 	$dailyTotal = intval(get_post_meta($tid, $dailyTotalMetaName, true));
 	
 	if(array_key_exists($UID, $voters)) {
@@ -418,11 +467,13 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	} 
 
 	$voters[$UID] = $new_vote;
+	$votersExpiry[$UID] = 10;
 	$dailyTotal += $new_vote;
 
 	$runningAverage = $dailyTotal/count($voters);
 	
 	update_post_meta($tid, $votersMetaName, $voters);
+	update_post_meta($tid, $votersExpiryMetaName, $votersExpiry);
 	update_post_meta($tid, $dailyTotalMetaName, $dailyTotal);
 	update_post_meta($tid, $runningAverageMetaName, $runningAverage);
 
