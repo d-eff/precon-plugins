@@ -216,7 +216,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 		$meta_value = get_post_meta( $post_id, 'House', true );
 		$new_meta_value = stripslashes( $_POST['house'] );
 
-		if ( $new_meta_value && '' == $meta_value ) {
+		if ( $new_meta_value && !isset($meta_value) ) {
 			add_post_meta( $post_id, 'House', $new_meta_value, true );
 		} elseif ( $new_meta_value != $meta_value ) {
 			update_post_meta( $post_id, 'House', $new_meta_value );
@@ -227,7 +227,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 		$meta_value = get_post_meta( $post_id, 'Expert', true );
 		$new_meta_value = stripslashes( $_POST['expert'] );
 
-		if ( $new_meta_value && '' == $meta_value ) {
+		if ( $new_meta_value && !isset($meta_value) ) {
 			add_post_meta( $post_id, 'Expert', $new_meta_value, true );
 		} elseif ( $new_meta_value != $meta_value ) {
 			update_post_meta( $post_id, 'Expert', $new_meta_value );
@@ -238,7 +238,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 		$meta_value = get_post_meta( $post_id, 'Community', true );
 		$new_meta_value = stripslashes( $_POST['community'] );
 
-		if ( $new_meta_value && '' == $meta_value ) {
+		if ( $new_meta_value && !isset($meta_value) ) {
 			add_post_meta( $post_id, 'Community', $new_meta_value, true );
 		} elseif ( $new_meta_value != $meta_value ) {
 			update_post_meta( $post_id, 'Community', $new_meta_value );
@@ -286,7 +286,7 @@ function precon_q_save_forecast( $post_id, $post ) {
 		//add to update list
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'preconforecasts';
-		$wpdb->insert($table_name, array('postid' => $post_id), '%s');
+		$wpdb->replace($table_name, array('postid' => $post_id), '%s');
 	}
 
 }
@@ -343,8 +343,8 @@ function notlogged_form() {
 function house_form($amount, $UID, $suffix, $tid) {
 	$votersMetaName = 'voters' . $suffix;
 	$vote = get_post_meta($tid, $votersMetaName, true);
-
-	if(!empty($vote)) {
+	
+	if(!empty($vote) && array_key_exists($UID, $vote)) {
 		$current = 'Your current forecast: ' . $vote[$UID];
 	} else {
 		$current = 'You do not currently have a forecast.';
