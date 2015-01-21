@@ -183,7 +183,7 @@ function precon_house_box( $object, $box ) { ?>
 		<label for="house">House Analysis</label>
 		<br />
 		<textarea name="house" id="house" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'House', true ), 1 ); ?></textarea>
-		<input type="hidden" name="house_box_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
+		
 	</p>
 <?php }
 function precon_expert_box( $object, $box ) { ?>
@@ -191,7 +191,7 @@ function precon_expert_box( $object, $box ) { ?>
 		<label for="expert">Expert Analysis</label>
 		<br />
 		<textarea name="expert" id="expert" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'Expert', true ), 1 ); ?></textarea>
-		<input type="hidden" name="expert_box_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
+		
 	</p>
 <?php }
 function precon_community_box( $object, $box ) { ?>
@@ -199,8 +199,7 @@ function precon_community_box( $object, $box ) { ?>
 		<label for="community">Community Analysis</label>
 		<br />
 		<textarea name="community" id="community" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( get_post_meta( $object->ID, 'Community', true ), 1 ); ?></textarea>
-		<input type="hidden" name="community_box_nonce" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
-	</p>
+		
 <?php }
 
 //Callback for Saving Forecast
@@ -209,52 +208,39 @@ function precon_q_save_forecast( $post_id, $post ) {
 	if ( !current_user_can( 'edit_post', $post_id ) )
 		return $post_id;
 
-	if ( isset($_POST['house_box_nonce']) && !wp_verify_nonce( $_POST['house_box_nonce'], plugin_basename( __FILE__ ) ) ) {
-		return $post_id;
-	} else {
-		$meta_value = get_post_meta( $post_id, 'House', true );
-		$new_meta_value = stripslashes( $_POST['house'] );
+	$meta_value = get_post_meta( $post_id, 'House', true );
+	$new_meta_value = stripslashes( $_POST['house'] );
 
-		if ( $new_meta_value && '' == $meta_value )
-			add_post_meta( $post_id, 'House', $new_meta_value, true );
-
-		elseif ( $new_meta_value != $meta_value )
-			update_post_meta( $post_id, 'House', $new_meta_value );
-
-		elseif ( '' == $new_meta_value && $meta_value )
-			delete_post_meta( $post_id, 'House', $meta_value );		
+	if ( $new_meta_value && '' == $meta_value ) {
+		add_post_meta( $post_id, 'House', $new_meta_value, true );
+	} elseif ( $new_meta_value != $meta_value ) {
+		update_post_meta( $post_id, 'House', $new_meta_value );
+	} elseif ( '' == $new_meta_value && $meta_value ) {
+		delete_post_meta( $post_id, 'House', $meta_value );
 	}		
-	if ( isset($_POST['expert_box_nonce']) && !wp_verify_nonce( $_POST['expert_box_nonce'], plugin_basename( __FILE__ ) ) ) {
-		return $post_id; 
-	} else {
-		$meta_value = get_post_meta( $post_id, 'Expert', true );
-		$new_meta_value = stripslashes( $_POST['expert'] );
 
-		if ( $new_meta_value && '' == $meta_value )
-			add_post_meta( $post_id, 'Expert', $new_meta_value, true );
+	$meta_value = get_post_meta( $post_id, 'Expert', true );
+	$new_meta_value = stripslashes( $_POST['expert'] );
 
-		elseif ( $new_meta_value != $meta_value )
-			update_post_meta( $post_id, 'Expert', $new_meta_value );
-
-		elseif ( '' == $new_meta_value && $meta_value )
-			delete_post_meta( $post_id, 'Expert', $meta_value );
-
-	}		
-	if ( isset($_POST['community_box_nonce']) && !wp_verify_nonce( $_POST['community_box_nonce'], plugin_basename( __FILE__ ) ) ) {
-		return $post_id;
-	} else {
-		$meta_value = get_post_meta( $post_id, 'Community', true );
-		$new_meta_value = stripslashes( $_POST['community'] );
-
-		if ( $new_meta_value && '' == $meta_value )
-			add_post_meta( $post_id, 'Community', $new_meta_value, true );
-
-		elseif ( $new_meta_value != $meta_value )
-			update_post_meta( $post_id, 'Community', $new_meta_value );
-
-		elseif ( '' == $new_meta_value && $meta_value )
-			delete_post_meta( $post_id, 'Community', $meta_value );
+	if ( $new_meta_value && '' == $meta_value ) {
+		add_post_meta( $post_id, 'Expert', $new_meta_value, true );
+	} elseif ( $new_meta_value != $meta_value ) {
+		update_post_meta( $post_id, 'Expert', $new_meta_value );
+	} elseif ( '' == $new_meta_value && $meta_value ) {
+		delete_post_meta( $post_id, 'Expert', $meta_value );
 	}
+	
+	$meta_value = get_post_meta( $post_id, 'Community', true );
+	$new_meta_value = stripslashes( $_POST['community'] );
+
+	if ( $new_meta_value && '' == $meta_value ) {
+		add_post_meta( $post_id, 'Community', $new_meta_value, true );
+	} elseif ( $new_meta_value != $meta_value ) {
+		update_post_meta( $post_id, 'Community', $new_meta_value );
+	} elseif ( '' == $new_meta_value && $meta_value ) {
+		delete_post_meta( $post_id, 'Community', $meta_value );
+	}
+
 
 
 	//Initialize voting stuff
