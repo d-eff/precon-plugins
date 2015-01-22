@@ -133,6 +133,14 @@ function precon_forecast_cron_hook() {
 					unset($votersExpirySub[$key]);
 				}
 			}
+			update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
+			update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);
+			update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
+
+			update_post_meta($pid, 'votersAdmin', $votersAdmin);
+			update_post_meta($pid, 'votersExpert', $votersExpert);
+			update_post_meta($pid, 'votersSub', $votersSub);
+		
 		}
 	}
 
@@ -305,9 +313,9 @@ function precon_q_save_forecast( $post_id, $post ) {
 		$votersExpiryAdmin = array();
 		$votersExpiryExpert = array();
 		$votersExpirySub = array();
-		add_post_meta($post_id, 'votersExpiryAdmin', $votersAdmin, true);
-		add_post_meta($post_id, 'votersExpiryExpert', $votersExpert, true);
-		add_post_meta($post_id, 'votersExpirySub', $votersSub, true);
+		add_post_meta($post_id, 'votersExpiryAdmin', $votersExpiryAdmin, true);
+		add_post_meta($post_id, 'votersExpiryExpert', $votersExpiryExpert, true);
+		add_post_meta($post_id, 'votersExpirySub', $votersExpirySub, true);
 
 		$dailyTotalAdmin = 0;
 		$dailyTotalExpert = 0;
@@ -389,10 +397,12 @@ function notlogged_form() {
 
 function house_form($amount, $UID, $suffix, $tid) {
 	$votersMetaName = 'voters' . $suffix;
+	$votersExpiryMetaName = 'votersExpiry' . $suffix;
 	$vote = get_post_meta($tid, $votersMetaName, true);
-	
+	$voteExp = get_post_meta($tid, $votersExpiryMetaName, true);
+
 	if(!empty($vote) && array_key_exists($UID, $vote)) {
-		$current = 'Your current forecast: ' . $vote[$UID];
+		$current = 'Your current forecast: ' . $vote[$UID] . '<br> Days to Expiry: ' . $voteExp[$UID];
 	} else {
 		$current = 'You do not currently have a forecast.';
 	}
