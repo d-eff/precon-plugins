@@ -100,39 +100,51 @@ function precon_forecast_cron_hook() {
 			$votersExpiryAdmin = get_post_meta($pid, 'votersExpiryAdmin', true);
 			$votersExpiryExpert = get_post_meta($pid, 'votersExpiryExpert', true);
 			$votersExpirySub = get_post_meta($pid, 'votersExpirySub', true);
+
+			$dailyTotalAd = intval(get_post_meta($pid, 'dailyTotalAdmin', true));
+			$dailyTotalEx = intval(get_post_meta($pid, 'dailyTotalExpert', true));
+			$dailyTotalSub = intval(get_post_meta($pid, 'dailyTotalSub', true));
+
 			foreach ($votersExpiryAdmin as $key => $votersExp) {
 				$votersExpiryAdmin[$key]--;
 				if($votersExpiryAdmin[$key] <= 0) {
-					$vote = $votersAdmin[$key];
+					$vote = intval($votersAdmin[$key]);
 					unset($votersAdmin[$key]);
-					$dailyTotal = intval(get_post_meta($pid, 'dailyTotalAdmin', true));
-					$dailyTotal -= $vote;
-					update_post_meta($pid, 'dailyTotalAdmin', $dailyTotal);
+					$dailyTotalAd -= $vote;
 					unset($votersExpiryAdmin[$key]);
 				}
 			}
 			foreach ($votersExpiryExpert as $key => $votersExp) {
 				$votersExpiryExpert[$key]--;
 				if($votersExpiryExpert[$key] <= 0) {
-					$vote = $votersExpert[$key];
+					$vote = intval($votersExpert[$key]);
 					unset($votersExpert[$key]);
-					$dailyTotal = intval(get_post_meta($pid, 'dailyTotalExpert', true));
-					$dailyTotal -= $vote;
-					update_post_meta($pid, 'dailyTotalAdmin', $dailyTotal);
+					$dailyTotalEx -= $vote;
 					unset($votersExpiryAdmin[$key]);
 				}
 			}
 			foreach ($votersExpirySub as $key => $votersExp) {
 				$votersExpirySub[$key]--;
 				if($votersExpirySub[$key] <= 0) {
-					$vote = $votersSub[$key];
+					$vote = intval($votersSub[$key]);
 					unset($votersSub[$key]);
-					$dailyTotal = intval(get_post_meta($pid, 'dailyTotalSub', true));
-					$dailyTotal -= $vote;
-					update_post_meta($pid, 'dailyTotalSub', $dailyTotal);
+					$dailyTotalSub -= $vote;
 					unset($votersExpirySub[$key]);
 				}
 			}
+
+			update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalAd);
+			update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalEx);
+			update_post_meta($pid, 'dailyTotalSub', $dailyTotalSub);
+
+			$runningAverageAd = $dailyTotalAd/count($votersAdmin);
+			$runningAverageEx = $dailyTotalEx/count($votersExpert);
+			$runningAverageSub = $dailyTotalSub/count($votersSub);
+
+			update_post_meta($pid, 'runningAverageAdmin', $runningAverageAd);
+			update_post_meta($pid, 'runningAverageEx', $runningAverageEx);
+			update_post_meta($pid, 'runningAverageSub', $runningAverageSub);
+
 			update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
 			update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);
 			update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
