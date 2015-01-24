@@ -414,7 +414,7 @@ function house_form($amount, $UID, $suffix, $tid) {
 	$voteExp = get_post_meta($tid, $votersExpiryMetaName, true);
 
 	if(!empty($vote) && array_key_exists($UID, $vote)) {
-		$current = 'Your current forecast: ' . $vote[$UID] . '<br> Days to Expiry: ' . $voteExp[$UID];
+		$current = 'Your current forecast: ' . $vote[$UID] . '<br> Days to expiry: ' . $voteExp[$UID];
 	} else {
 		$current = 'You do not currently have a forecast.';
 	}
