@@ -63,7 +63,7 @@ function precon_export_run() {
 				foreach($postlist as $post) {
 					setup_postdata($post);
 					$pid = $post->ID; 
-					$votes = get_post_meta($pid, 'historicalVotesExpert', true);
+					$votes = get_post_meta($pid, 'votersExpert', true);
 					$row = array();
 
 					$row[] = $pid;
