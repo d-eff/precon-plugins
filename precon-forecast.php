@@ -160,7 +160,7 @@ function precon_forecast_cron_hook() {
 			} else {
 				$date = $newDate;
 			}
-			update_post_meta($pid, 'currentDate');
+			update_post_meta($pid, 'currentDate', $date);
 
 		}
 	}

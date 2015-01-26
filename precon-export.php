@@ -61,6 +61,8 @@ function precon_export_run() {
 		setup_postdata($post);
 		$pid = $post->ID; 
 		$votes = get_post_meta($pid, 'votersExpert', true);
+		$exp = get_post_meta($pid, 'votersExpiryExpert', true);
+		$date = current_time('timestamp', $gmt = 0);
 		
 		foreach ($votes as $key => $value) {
 			$row = array();
@@ -69,6 +71,8 @@ function precon_export_run() {
 			$row[] = $post->post_title;
 		 	$row[] = $user->first_name . ' ' . $user->last_name;
 		 	$row[] = $value;
+		 	$row[] = $date;
+
 		 	$data_rows[] = $row;
 		}
 		wp_reset_postdata(); 
