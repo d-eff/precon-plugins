@@ -75,7 +75,7 @@ function precon_forecast_cron_hook() {
 		foreach ($forecasts as $value) {
 			$post = get_post($value);
 			$pid = intval($post->postid);
-			$date = date('m/d/y', current_time('timestamp', $gmt = 0));
+			$date = get_post_meta($pid, 'currentDate', true);	
 
 			$runningAverageAdmin = get_post_meta($pid, 'runningAverageAdmin', true);
 			$runningAverageExpert = get_post_meta($pid, 'runningAverageExpert', true);
@@ -153,6 +153,15 @@ function precon_forecast_cron_hook() {
 			update_post_meta($pid, 'votersExpert', $votersExpert);
 			update_post_meta($pid, 'votersSub', $votersSub);
 		
+			$newDate = date('m/d/y', current_time('timestamp', $gmt = 0));
+			if($newDate == $date) {
+				$dateTime = new DateTime('tomorrow');
+				$date = $dateTime->format('m/d/y');
+			} else {
+				$date = $newDate;
+			}
+			update_post_meta($pid, 'currentDate');
+
 		}
 	}
 
@@ -349,6 +358,8 @@ function precon_q_save_forecast( $post_id, $post ) {
 		add_post_meta($post_id, 'historicalVotesAdmin', $historicalVotesAdmin, true);
 		add_post_meta($post_id, 'historicalVotesExpert', $historicalVotesExpert, true);
 		add_post_meta($post_id, 'historicalVotesSub', $historicalVotesSub, true);
+
+		add_post_meta($post_id, 'currentDate', date('m/d/y', current_time('timestamp', $gmt = 0)), true);
 
 		//add to update list
 		global $wpdb;
