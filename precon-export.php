@@ -51,93 +51,28 @@ function precon_export_run() {
 
 	$data_rows = array();
 
-	global $wpdb;
-	$results = $wpdb->get_results('select p.id, p.post_title, m.meta_key, m.meta_value from wp_fsko_posts p inner join wp_fsko_preconforecasts f on p.id=f.postid inner join wp_fsko_postmeta m on p.id=m.post_id where m.meta_key like \'historicalVotesAdmin\' OR m.meta_key like \'historicalVotesExpert\' OR m.meta_key like \'historicalVotesSub\'');
-
 	$postlist = get_posts(array(
 					'orderby'          => 'title',
 					'order'            => 'ASC',
 					'post_type'        => 'forecast',
 					'posts_per_page'   => -1,
-					));
-				foreach($postlist as $post) {
-					setup_postdata($post);
-					$pid = $post->ID; 
-					$votes = get_post_meta($pid, 'votersExpert', true);
+				));
+	foreach($postlist as $post) {
+		setup_postdata($post);
+		$pid = $post->ID; 
+		$votes = get_post_meta($pid, 'votersExpert', true);
 		
-					foreach ($votes as $key => $value) {
-					 	$user = get_user_by('id', $key);
-					 	$row = array();
-
-						$row[] = $pid;
-						$row[] = $post->post_title;
-					 	$row[] = $user->first_name . ' ' . $user->last_name;
-					 	$row[] = $value;
-					}
-
-					// $row[] = $pid;
-					// $row[] = $post->post_title;
-					// $row[] = "House";
-					// $votes = get_post_meta($pid, 'historicalVotesAdmin', true);
-					// foreach ($votes as $key => $value) {
-					// 	$row[] = $key . ' ' . $value;
-					// }
-					// $row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageAdmin', true);
-					// $data_rows[] = $row;
-
-					// $row = array();
-					// $row[] = $pid;
-					// $row[] = $post->post_title;
-					// $row[] = "Experts";
-					// $votes = get_post_meta($pid, 'historicalVotesExpert', true);
-					// foreach ($votes as $key => $value) {
-					// 	$row[] = $key . ' ' . $value;
-					// }
-					// $row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageExpert', true);
-					// $data_rows[] = $row;
-
-					// $row = array();
-					// $row[] = $pid;
-					// $row[] = $post->post_title;
-					// $row[] = "Subscribers";
-					// $votes = get_post_meta($pid, 'historicalVotesSub', true);
-					// foreach ($votes as $key => $value) {
-					// 	$row[] = $key . ' ' . $value;
-					// }
-					// $row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageSub', true);
-					$data_rows[] = $row;
-					wp_reset_postdata(); 	
-				}
-			
-
-	// foreach ( $results as $res ) {
-	// 	$row = array();
-	// 	$row[] = $res->id;
-	// 	$row[] = $res->post_title;
-	// 	$mkey = $res->meta_key;
-
-	// 	switch ($mkey) {
-	// 		case 'historicalVotesAdmin':
-	// 			$mkey = 'House';
-	// 			break;
-			
-	// 		case 'historicalVotesExpert':
-	// 			$mkey = 'Expert';
-	// 			break;
-
-	// 		case 'historicalVotesSub':
-	// 			$mkey = 'Subscriber';
-	// 			break;
-	// 	}
-
-	// 	$row[] = $mkey;
-	// 	$vals = unserialize($res->meta_value);
-	// 	foreach ($vals as $key => $value) {
-	// 		$row[] = $key . ' ' . $value;	
-	// 	}
-
-	// 	$data_rows[] = $row;
-	// }
+		foreach ($votes as $key => $value) {
+			$row = array();
+		 	$user = get_user_by('id', $key);
+			$row[] = $pid;
+			$row[] = $post->post_title;
+		 	$row[] = $user->first_name . ' ' . $user->last_name;
+		 	$row[] = $value;
+		 	$data_rows[] = $row;
+		}
+		wp_reset_postdata(); 
+	}
 
 	header( 'Cache-Control: must-revalidate, post-check=0, pre-check=0' );
 	header( 'Content-Description: File Transfer' );
