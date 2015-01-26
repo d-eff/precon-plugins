@@ -64,12 +64,13 @@ function precon_export_run() {
 					setup_postdata($post);
 					$pid = $post->ID; 
 					$votes = get_post_meta($pid, 'votersExpert', true);
-					$row = array();
-
-					$row[] = $pid;
-					$row[] = $post->post_title;
+		
 					foreach ($votes as $key => $value) {
 					 	$user = get_user_by('id', $key);
+					 	$row = array();
+
+						$row[] = $pid;
+						$row[] = $post->post_title;
 					 	$row[] = $user->first_name . ' ' . $user->last_name;
 					 	$row[] = $value;
 					}
