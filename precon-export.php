@@ -71,7 +71,8 @@ function precon_export_run() {
 			$row[] = $post->post_title;
 		 	$row[] = $user->first_name . ' ' . $user->last_name;
 		 	$row[] = $value;
-		 	$row[] = $date;
+		 	$adjDate = date('m/d/y', $date - (86400 * (10 - intval($exp[$key]))));
+		 	$row[] = $adjDate;
 
 		 	$data_rows[] = $row;
 		}
