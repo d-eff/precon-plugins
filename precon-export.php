@@ -45,7 +45,7 @@ function precon_export_run() {
 	$header_row = array(
 		0 => 'ID',
 		1 => 'Forecast Title',
-		2 => 'Key',
+		2 => 'User',
 		3 => 'Values',
 	);
 

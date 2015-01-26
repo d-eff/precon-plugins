@@ -153,13 +153,7 @@ function drawGraph(dat, x) {
   
   var dots = 10;
   var gap = Math.floor(dat[0].split(' ').length/dots);
-  var dates = dat[0].split(' ').map(function(x, index){
-    if(index % gap === 0) {
-      return x;
-    } else {
-      return " ";
-    }
-  });
+  var dates = dat[0].split(' ');
   var vals = dat[1].split(' ').map(function(x){ return parseInt(x); });
    // var dates=["4/10/12", "4/11/12", "4/12/12", "4/10/12", "4/11/12", "4/12/12"];
    // var vals = [50, 75, 60, 50, 75, 60];
@@ -201,6 +195,13 @@ function drawGraph(dat, x) {
     };
 
   } else {
+        dates.map(function(x, index){
+        if(index % gap === 0) {
+          return x;
+        } else {
+          return " ";
+        }
+      });
 
     var data = {
     labels: dates,
