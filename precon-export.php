@@ -46,7 +46,9 @@ function precon_export_run() {
 		0 => 'ID',
 		1 => 'Forecast Title',
 		2 => 'User',
-		3 => 'Values',
+		3 => 'Vote',
+		4 => 'Date',
+		5 => 'Days til Expiry',
 	);
 
 	$data_rows = array();
@@ -73,7 +75,7 @@ function precon_export_run() {
 		 	$row[] = $value;
 		 	$adjDate = date('m/d/y', $date - (86400 * (10 - intval($exp[$key]))));
 		 	$row[] = $adjDate;
-
+		 	$row[] = $exp[$key];
 		 	$data_rows[] = $row;
 		}
 		wp_reset_postdata(); 
