@@ -63,38 +63,47 @@ function precon_export_run() {
 				foreach($postlist as $post) {
 					setup_postdata($post);
 					$pid = $post->ID; 
-
-					$row = array();
-					$row[] = $pid;
-					$row[] = $post->post_title;
-					$row[] = "House";
-					$votes = get_post_meta($pid, 'historicalVotesAdmin', true);
-					foreach ($votes as $key => $value) {
-						$row[] = $key . ' ' . $value;
-					}
-					$row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageAdmin', true);
-					$data_rows[] = $row;
-
-					$row = array();
-					$row[] = $pid;
-					$row[] = $post->post_title;
-					$row[] = "Experts";
 					$votes = get_post_meta($pid, 'historicalVotesExpert', true);
-					foreach ($votes as $key => $value) {
-						$row[] = $key . ' ' . $value;
-					}
-					$row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageExpert', true);
-					$data_rows[] = $row;
-
 					$row = array();
+
 					$row[] = $pid;
 					$row[] = $post->post_title;
-					$row[] = "Subscribers";
-					$votes = get_post_meta($pid, 'historicalVotesSub', true);
 					foreach ($votes as $key => $value) {
-						$row[] = $key . ' ' . $value;
+					 	$user = get_user_by('id', $key);
+					 	$row[] = $user->first_name . ' ' . $user->last_name;
+					 	$row[] = $value;
 					}
-					$row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageSub', true);
+
+					// $row[] = $pid;
+					// $row[] = $post->post_title;
+					// $row[] = "House";
+					// $votes = get_post_meta($pid, 'historicalVotesAdmin', true);
+					// foreach ($votes as $key => $value) {
+					// 	$row[] = $key . ' ' . $value;
+					// }
+					// $row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageAdmin', true);
+					// $data_rows[] = $row;
+
+					// $row = array();
+					// $row[] = $pid;
+					// $row[] = $post->post_title;
+					// $row[] = "Experts";
+					// $votes = get_post_meta($pid, 'historicalVotesExpert', true);
+					// foreach ($votes as $key => $value) {
+					// 	$row[] = $key . ' ' . $value;
+					// }
+					// $row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageExpert', true);
+					// $data_rows[] = $row;
+
+					// $row = array();
+					// $row[] = $pid;
+					// $row[] = $post->post_title;
+					// $row[] = "Subscribers";
+					// $votes = get_post_meta($pid, 'historicalVotesSub', true);
+					// foreach ($votes as $key => $value) {
+					// 	$row[] = $key . ' ' . $value;
+					// }
+					// $row[] = date('m/d/y', current_time('timestamp', $gmt = 0)) . ' ' . get_post_meta($pid, 'runningAverageSub', true);
 					$data_rows[] = $row;
 					wp_reset_postdata(); 	
 				}
