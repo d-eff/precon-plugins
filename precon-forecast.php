@@ -108,8 +108,8 @@ function precon_forecast_cron_hook() {
 			$updateFlag = false;
 
 			foreach ($votersExpiryAdmin as $key => $votersExp) {
-				intval($votersExpiryAdmin[$key])--;
-				if(intval($votersExpiryAdmin[$key]) <= 0) {
+				$votersExpiryAdmin[$key]--;
+				if($votersExpiryAdmin[$key] <= 0) {
 					$vote = intval($votersAdmin[$key]);
 					unset($votersAdmin[$key]);
 					$dailyTotalAd -= $vote;
@@ -127,8 +127,8 @@ function precon_forecast_cron_hook() {
 			}
 
 			foreach ($votersExpiryExpert as $key => $votersExp) {
-				intval($votersExpiryExpert[$key])--;
-				if(intval($votersExpiryExpert[$key]) <= 0) {
+				$votersExpiryExpert[$key]--;
+				if($votersExpiryExpert[$key] <= 0) {
 					$vote = intval($votersExpert[$key]);
 					unset($votersExpert[$key]);
 					$dailyTotalEx -= $vote;
@@ -146,8 +146,8 @@ function precon_forecast_cron_hook() {
 			}
 
 			foreach ($votersExpirySub as $key => $votersExp) {
-				intval($votersExpirySub[$key])--;
-				if(intval($votersExpirySub[$key]) <= 0) {
+				$votersExpirySub[$key]--;
+				if($votersExpirySub[$key] <= 0) {
 					$vote = intval($votersSub[$key]);
 					unset($votersSub[$key]);
 					$dailyTotalSub -= $vote;
