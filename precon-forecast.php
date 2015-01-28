@@ -105,53 +105,64 @@ function precon_forecast_cron_hook() {
 			$dailyTotalEx = intval(get_post_meta($pid, 'dailyTotalExpert', true));
 			$dailyTotalSub = intval(get_post_meta($pid, 'dailyTotalSub', true));
 
+			$updateFlag = false;
+
 			foreach ($votersExpiryAdmin as $key => $votersExp) {
-				$votersExpiryAdmin[$key]--;
-				if($votersExpiryAdmin[$key] <= 0) {
+				intval($votersExpiryAdmin[$key])--;
+				if(intval($votersExpiryAdmin[$key]) <= 0) {
 					$vote = intval($votersAdmin[$key]);
 					unset($votersAdmin[$key]);
 					$dailyTotalAd -= $vote;
 					unset($votersExpiryAdmin[$key]);
+					$updateFlag = true;
 				}
 			}
+			if($updateFlag) {
+				update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalAd);
+				$runningAverageAd = $dailyTotalAd/count($votersAdmin);
+				update_post_meta($pid, 'runningAverageAdmin', $runningAverageAd);
+				update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
+				update_post_meta($pid, 'votersAdmin', $votersAdmin);
+				$updateFlag = false;
+			}
+
 			foreach ($votersExpiryExpert as $key => $votersExp) {
-				$votersExpiryExpert[$key]--;
-				if($votersExpiryExpert[$key] <= 0) {
+				intval($votersExpiryExpert[$key])--;
+				if(intval($votersExpiryExpert[$key]) <= 0) {
 					$vote = intval($votersExpert[$key]);
 					unset($votersExpert[$key]);
 					$dailyTotalEx -= $vote;
-					unset($votersExpiryAdmin[$key]);
+					unset($votersExpiryExpert[$key]);
+			
 				}
 			}
+			if($updateFlag) {
+				update_post_meta($pid, 'dailyTotalExpert', $dailyTotalEx);
+				$runningAverageEx = $dailyTotalEx/count($votersExpert);
+				update_post_meta($pid, 'runningAverageExpert', $runningAverageEx);
+				update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);		
+				update_post_meta($pid, 'votersExpert', $votersExpert);
+				$updateFlag = false;
+			}
+
 			foreach ($votersExpirySub as $key => $votersExp) {
-				$votersExpirySub[$key]--;
-				if($votersExpirySub[$key] <= 0) {
+				intval($votersExpirySub[$key])--;
+				if(intval($votersExpirySub[$key]) <= 0) {
 					$vote = intval($votersSub[$key]);
 					unset($votersSub[$key]);
 					$dailyTotalSub -= $vote;
 					unset($votersExpirySub[$key]);
+					$updateFlag = true;
 				}
 			}
-
-			update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalAd);
-			update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalEx);
-			update_post_meta($pid, 'dailyTotalSub', $dailyTotalSub);
-
-			$runningAverageAd = $dailyTotalAd/count($votersAdmin);
-			$runningAverageEx = $dailyTotalEx/count($votersExpert);
-			$runningAverageSub = $dailyTotalSub/count($votersSub);
-
-			update_post_meta($pid, 'runningAverageAdmin', $runningAverageAd);
-			update_post_meta($pid, 'runningAverageEx', $runningAverageEx);
-			update_post_meta($pid, 'runningAverageSub', $runningAverageSub);
-
-			update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
-			update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);
-			update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
-
-			update_post_meta($pid, 'votersAdmin', $votersAdmin);
-			update_post_meta($pid, 'votersExpert', $votersExpert);
-			update_post_meta($pid, 'votersSub', $votersSub);
+			if($updateFlag) {
+				update_post_meta($pid, 'dailyTotalSub', $dailyTotalSub);
+				$runningAverageSub = $dailyTotalSub/count($votersSub);
+				update_post_meta($pid, 'runningAverageSub', $runningAverageSub);
+				update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
+				update_post_meta($pid, 'votersSub', $votersSub);
+				$updateFlag = false;
+			}
 		
 			$newDate = date('m/d/y', current_time('timestamp', $gmt = 0));
 			if($newDate == $date) {

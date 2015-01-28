@@ -76,6 +76,7 @@ function precon_export_run() {
 		 	$adjDate = date('m/d/y', $date - (86400 * (10 - intval($exp[$key]))));
 		 	$row[] = $adjDate;
 		 	$row[] = $exp[$key];
+		 	
 		 	$data_rows[] = $row;
 		}
 		wp_reset_postdata(); 
