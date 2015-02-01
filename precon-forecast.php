@@ -117,14 +117,15 @@ function precon_forecast_cron_hook() {
 					$updateFlag = true;
 				}
 			}
+			update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
 			if($updateFlag) {
 				update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalAd);
 				$runningAverageAd = $dailyTotalAd/count($votersAdmin);
 				update_post_meta($pid, 'runningAverageAdmin', $runningAverageAd);
-				update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
 				update_post_meta($pid, 'votersAdmin', $votersAdmin);
 				$updateFlag = false;
 			}
+
 
 			foreach ($votersExpiryExpert as $key => $votersExp) {
 				$votersExpiryExpert[$key]--;
@@ -133,18 +134,20 @@ function precon_forecast_cron_hook() {
 					unset($votersExpert[$key]);
 					$dailyTotalEx -= $vote;
 					unset($votersExpiryExpert[$key]);
-			
+					$updateFlag = true;
 				}
 			}
+			update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);	
 			if($updateFlag) {
 				update_post_meta($pid, 'dailyTotalExpert', $dailyTotalEx);
 				$runningAverageEx = $dailyTotalEx/count($votersExpert);
 				update_post_meta($pid, 'runningAverageExpert', $runningAverageEx);
-				update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);		
 				update_post_meta($pid, 'votersExpert', $votersExpert);
 				$updateFlag = false;
 			}
 
+
+			//deal with subscriber vote expiry
 			foreach ($votersExpirySub as $key => $votersExp) {
 				$votersExpirySub[$key]--;
 				if($votersExpirySub[$key] <= 0) {
@@ -155,15 +158,18 @@ function precon_forecast_cron_hook() {
 					$updateFlag = true;
 				}
 			}
+			//save voter expiry data; only save uodated vote data if votes expired
+			update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
 			if($updateFlag) {
 				update_post_meta($pid, 'dailyTotalSub', $dailyTotalSub);
 				$runningAverageSub = $dailyTotalSub/count($votersSub);
 				update_post_meta($pid, 'runningAverageSub', $runningAverageSub);
-				update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
 				update_post_meta($pid, 'votersSub', $votersSub);
 				$updateFlag = false;
 			}
-		
+
+
+			//update currentDate
 			$newDate = date('m/d/y', current_time('timestamp', $gmt = 0));
 			if($newDate == $date) {
 				$dateTime = new DateTime('tomorrow');
