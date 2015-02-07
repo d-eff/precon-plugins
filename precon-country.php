@@ -42,6 +42,7 @@ function precon_country_init() {
 		'capability_type'    => array('precon_country', 'precon_countries'),
 		'has_archive'        => true,
 		'hierarchical'       => false,
+		'exclude_from_search'=> true,
 		'menu_position'      => null,
 		'menu_icon'			 => 'dashicons-admin-site',
 		'supports'           => array( 'title', 'editor', 'thumbnail', 'tags', 'page-attributes'),
@@ -167,7 +168,7 @@ function precon_country_save_meta( $post_id, $post ) {
 	$title = $post->post_title;
 
 	if($title != 'Auto Draft') {
-		$newCat = wp_create_category($title, get_cat_ID('country'));
+		$newCat = wp_create_category($title, get_cat_ID('countries'));
 
 		wp_set_post_categories($post_id, array($newCat), TRUE);
 

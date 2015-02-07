@@ -218,6 +218,7 @@ function precon_forecast_init() {
 		'capability_type'    => array('precon_forecast', 'precon_forecasts'),
 		'has_archive'        => true,
 		'hierarchical'       => false,
+		'exclude_from_search'=> true,
 		'menu_position'      => null,
 		'menu_icon'			 => 'dashicons-chart-line',
 		'supports'           => array( 'title', 'editor', 'thumbnail', 'tags', 'page-attributes'),

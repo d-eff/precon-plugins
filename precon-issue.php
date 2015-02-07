@@ -42,6 +42,7 @@ function precon_issue_init() {
 		'capability_type'    => array('precon_issue', 'precon_issues'),
 		'has_archive'        => true,
 		'hierarchical'       => false,
+		'exclude_from_search'=> true,
 		'menu_position'      => null,
 		'menu_icon'			 => 'dashicons-welcome-widgets-menus',
 		'supports'           => array( 'title', 'editor', 'thumbnail', 'tags', 'page-attributes'),
