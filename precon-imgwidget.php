@@ -19,7 +19,8 @@
                 'image' => '',
                 'copy' => '',
                 'checkbox' => '',
-                'link' => ''
+                'link' => '',
+                'side' => ''
             );
             $instance = wp_parse_args( (array) $instance, $defaults );
             $title = $instance['title'];
@@ -27,6 +28,7 @@
             $copy = $instance['copy'];
             $checkbox = $instance['checkbox'];
             $link = $instance['link'];
+            $side = $instance['side'];
             ?>
             <p>
                 <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Wiget Title', 'cc_language'); ?>:
@@ -57,6 +59,13 @@
                 <label for="<?php echo $this->get_field_id('checkbox'); ?>"><?php _e('Do not show title', 'cc_language'); ?></label>
                 <input id="<?php echo $this->get_field_id('checkbox'); ?>" type="checkbox" name="<?php echo $this->get_field_name('checkbox'); ?>" value="true" <?php checked( 'true', $checkbox ); ?> />
             </p>
+            <p>
+                <label for="<?php echo $this->get_field_id('side'); ?>"><?php _e('Side', 'cc_language'); ?>:</label><br>
+                <radiogroup>
+                    <input type="radio" value="left" name="<?php echo $this->get_field_name('side'); ?>" <?php checked($side, 'left', true); ?> >Left
+                    <input type="radio" value="right" name="<?php echo $this->get_field_name('side'); ?>" <?php checked($side, 'right', true); ?> >Right
+                </radiogroup>
+            </p>
             <?php
         }
 
@@ -67,6 +76,7 @@
                 $instance['checkbox'] = strip_tags($new_instance['checkbox']); 
                 $instance['copy'] = $new_instance['copy'];
                 $instance['link'] = $new_instance['link'];
+                $instance['side'] = $new_instance['side'];
             return $instance;
         }
 
@@ -76,6 +86,7 @@
             $title = apply_filters('widget_title', empty($instance['title']) ? __('Image') : $instance['title'], $instance, $this->id_base);
             $copy = $instance['copy'];
             $link = $instance['link'];
+            $side = $instance['side'];
 
             echo $before_widget;
 
@@ -87,9 +98,9 @@
                 }
 
             // display the widget content 
-                echo '<div class="precon-imgWidgetContainer">' .
+                echo '<div class="precon-imgWidgetContainer' . $side . ' precon-imgWidgetContainer">' .
                         '<a href="' . $link .'"><img src="' . $instance['image'] . '" class="precon-imgWidgetImage">' .
-                        '<div class="precon-imgWidgetTextWrap"><span class="precon-imgWidgetText">' . $copy . '</span></div></a>' .
+                        '<div class="precon-imgWidgetTextWrap' . $side . ' precon-imgWidgetTextWrap"><span class="precon-imgWidgetText">' . $copy . '</span></div></a>' .
                       '</div>';
         echo $after_widget;
         }

@@ -1,6 +1,11 @@
 .precon-imgWidgetContainer {
-	width: 230px;
 	position: relative;
+}
+.precon-imgWidgetContainerleft {
+	width: 200px;
+}
+.precon-imgWidgetContainerright {
+	width: 230px;
 }
 .precon-imgWidgetImage {
 	width: 100%;
@@ -11,8 +16,13 @@
 	left: 10px;
 	color: white;
 	border: 5px solid white;
-	width: 200px;
 	height: 84%;
+}
+.precon-imgWidgetTextWrapleft {
+	width: 170px;
+}
+.precon-imgWidgetTextWrapright {
+	width: 200px;
 }
 .precon-imgWidgetText {
 	position: absolute;
