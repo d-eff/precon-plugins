@@ -153,7 +153,7 @@ function drawGraph(dat, x) {
   
   var dots = 10;
   var dates = dat[0].split(' ');
-  var gap = Math.round(dates.length/dots);
+  var gap = Math.round((dates.length/dots) + 0.5);
   var vals = dat[1].split(' ').map(function(x){ return parseInt(x); });
 
   var dlength = dates.length,
