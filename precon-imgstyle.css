@@ -12,17 +12,19 @@
 }
 .precon-imgWidgetTextWrap {
 	position: absolute;
-	top: 10px;
-	left: 10px;
 	color: white;
-	border: 5px solid white;
-	height: 84%;
+	border: 2px solid white;
+	height: 87%;
 }
 .precon-imgWidgetTextWrapleft {
-	width: 170px;
+	top: 8px;
+	left: 8px;
+	width: 180px;
 }
 .precon-imgWidgetTextWrapright {
-	width: 200px;
+	top: 10px;
+	left: 8px;
+	width: 210px;
 }
 .precon-imgWidgetText {
 	position: absolute;
