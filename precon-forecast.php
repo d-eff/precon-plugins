@@ -120,7 +120,11 @@ function precon_forecast_cron_hook() {
 			update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
 			if($updateFlag) {
 				update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalAd);
-				$runningAverageAd = $dailyTotalAd/count($votersAdmin);
+				if(count($votersAdmin) != 0) {
+					$runningAverageAd = $dailyTotalAd/count($votersAdmin);
+				} else {
+					$runningAverageAd = 0;
+				}
 				update_post_meta($pid, 'runningAverageAdmin', $runningAverageAd);
 				update_post_meta($pid, 'votersAdmin', $votersAdmin);
 				$updateFlag = false;
@@ -140,7 +144,11 @@ function precon_forecast_cron_hook() {
 			update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);	
 			if($updateFlag) {
 				update_post_meta($pid, 'dailyTotalExpert', $dailyTotalEx);
-				$runningAverageEx = $dailyTotalEx/count($votersExpert);
+				if(count($votersExpert) != 0) {
+					$runningAverageEx = $dailyTotalEx/count($votersExpert);
+				} else {
+					$runningAverageEx = 0;
+				}
 				update_post_meta($pid, 'runningAverageExpert', $runningAverageEx);
 				update_post_meta($pid, 'votersExpert', $votersExpert);
 				$updateFlag = false;
@@ -162,7 +170,12 @@ function precon_forecast_cron_hook() {
 			update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
 			if($updateFlag) {
 				update_post_meta($pid, 'dailyTotalSub', $dailyTotalSub);
-				$runningAverageSub = $dailyTotalSub/count($votersSub);
+				if(count($votersSub) != 0) {
+					$runningAverageSub = $dailyTotalSub/count($votersSub);	
+				} else {
+					$runningAverageSub = 0;
+				}
+				
 				update_post_meta($pid, 'runningAverageSub', $runningAverageSub);
 				update_post_meta($pid, 'votersSub', $votersSub);
 				$updateFlag = false;
