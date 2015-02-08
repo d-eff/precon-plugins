@@ -106,31 +106,9 @@ function precon_forecast_cron_hook() {
 			$dailyTotalSub = intval(get_post_meta($pid, 'dailyTotalSub', true));
 
 			$updateFlag = false;
+			//skipping admin expiry
 
-			foreach ($votersExpiryAdmin as $key => $votersExp) {
-				$votersExpiryAdmin[$key]--;
-				if($votersExpiryAdmin[$key] <= 0) {
-					$vote = intval($votersAdmin[$key]);
-					unset($votersAdmin[$key]);
-					$dailyTotalAd -= $vote;
-					unset($votersExpiryAdmin[$key]);
-					$updateFlag = true;
-				}
-			}
-			update_post_meta($pid, 'votersExpiryAdmin', $votersExpiryAdmin);
-			if($updateFlag) {
-				update_post_meta($pid, 'dailyTotalAdmin', $dailyTotalAd);
-				if(count($votersAdmin) != 0) {
-					$runningAverageAd = $dailyTotalAd/count($votersAdmin);
-				} else {
-					$runningAverageAd = 0;
-				}
-				update_post_meta($pid, 'runningAverageAdmin', $runningAverageAd);
-				update_post_meta($pid, 'votersAdmin', $votersAdmin);
-				$updateFlag = false;
-			}
-
-
+			//handle expert expiry
 			foreach ($votersExpiryExpert as $key => $votersExp) {
 				$votersExpiryExpert[$key]--;
 				if($votersExpiryExpert[$key] <= 0) {
@@ -142,6 +120,7 @@ function precon_forecast_cron_hook() {
 				}
 			}
 			update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);	
+			//only update if we've had an expiration
 			if($updateFlag) {
 				update_post_meta($pid, 'dailyTotalExpert', $dailyTotalEx);
 				if(count($votersExpert) != 0) {
@@ -153,7 +132,6 @@ function precon_forecast_cron_hook() {
 				update_post_meta($pid, 'votersExpert', $votersExpert);
 				$updateFlag = false;
 			}
-
 
 			//deal with subscriber vote expiry
 			foreach ($votersExpirySub as $key => $votersExp) {
