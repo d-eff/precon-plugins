@@ -155,8 +155,6 @@ function drawGraph(dat, x) {
   var dates = dat[0].split(' ');
   var gap = Math.round(dates.length/dots);
   var vals = dat[1].split(' ').map(function(x){ return parseInt(x); });
-   // var dates=["4/10/12", "4/11/12", "4/12/12", "4/10/12", "4/11/12", "4/12/12"];
-   // var vals = [50, 75, 60, 50, 75, 60];
 
   var dlength = dates.length,
       vlength = vals.length;
