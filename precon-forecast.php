@@ -451,8 +451,10 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	$numVoters = count($voters);
 	if($numVoters > 0) {
 		$runningAverage = $dailyTotal/$numVoters;
-		update_post_meta($tid, $runningAverageMetaName, $runningAverage);
+	} else {
+		$runningAverage = 0;
 	}
+	update_post_meta($tid, $runningAverageMetaName, $runningAverage);
 
 	update_post_meta($tid, $votersMetaName, $voters);
 	update_post_meta($tid, $dailyTotalMetaName, $dailyTotal);
