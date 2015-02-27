@@ -97,68 +97,9 @@ function precon_forecast_cron_hook() {
 			$votersExpert = get_post_meta($pid, 'votersExpert', true);
 			$votersSub = get_post_meta($pid, 'votersSub', true);
 
-			$votersExpiryAdmin = get_post_meta($pid, 'votersExpiryAdmin', true);
-			$votersExpiryExpert = get_post_meta($pid, 'votersExpiryExpert', true);
-			$votersExpirySub = get_post_meta($pid, 'votersExpirySub', true);
-
 			$dailyTotalAd = intval(get_post_meta($pid, 'dailyTotalAdmin', true));
 			$dailyTotalEx = intval(get_post_meta($pid, 'dailyTotalExpert', true));
 			$dailyTotalSub = intval(get_post_meta($pid, 'dailyTotalSub', true));
-
-			$updateFlag = false;
-			//skipping admin expiry
-
-			//handle expert expiry
-			foreach ($votersExpiryExpert as $key => $votersExp) {
-				$votersExpiryExpert[$key]--;
-				if($votersExpiryExpert[$key] <= 0) {
-					$vote = intval($votersExpert[$key]);
-					unset($votersExpert[$key]);
-					$dailyTotalEx -= $vote;
-					unset($votersExpiryExpert[$key]);
-					$updateFlag = true;
-				}
-			}
-			update_post_meta($pid, 'votersExpiryExpert', $votersExpiryExpert);	
-			//only update if we've had an expiration
-			if($updateFlag) {
-				update_post_meta($pid, 'dailyTotalExpert', $dailyTotalEx);
-				if(count($votersExpert) != 0) {
-					$runningAverageEx = $dailyTotalEx/count($votersExpert);
-				} else {
-					$runningAverageEx = 0;
-				}
-				update_post_meta($pid, 'runningAverageExpert', $runningAverageEx);
-				update_post_meta($pid, 'votersExpert', $votersExpert);
-				$updateFlag = false;
-			}
-
-			//deal with subscriber vote expiry
-			foreach ($votersExpirySub as $key => $votersExp) {
-				$votersExpirySub[$key]--;
-				if($votersExpirySub[$key] <= 0) {
-					$vote = intval($votersSub[$key]);
-					unset($votersSub[$key]);
-					$dailyTotalSub -= $vote;
-					unset($votersExpirySub[$key]);
-					$updateFlag = true;
-				}
-			}
-			//save voter expiry data; only save uodated vote data if votes expired
-			update_post_meta($pid, 'votersExpirySub', $votersExpirySub);
-			if($updateFlag) {
-				update_post_meta($pid, 'dailyTotalSub', $dailyTotalSub);
-				if(count($votersSub) != 0) {
-					$runningAverageSub = $dailyTotalSub/count($votersSub);	
-				} else {
-					$runningAverageSub = 0;
-				}
-				
-				update_post_meta($pid, 'runningAverageSub', $runningAverageSub);
-				update_post_meta($pid, 'votersSub', $votersSub);
-				$updateFlag = false;
-			}
-
 
 			//update currentDate
 			$newDate = date('m/d/y', current_time('timestamp', $gmt = 0));
@@ -340,13 +281,6 @@ function precon_q_save_forecast( $post_id, $post ) {
 		add_post_meta($post_id, 'votersExpert', $votersExpert, true);
 		add_post_meta($post_id, 'votersSub', $votersSub, true);
 
-		$votersExpiryAdmin = array();
-		$votersExpiryExpert = array();
-		$votersExpirySub = array();
-		add_post_meta($post_id, 'votersExpiryAdmin', $votersExpiryAdmin, true);
-		add_post_meta($post_id, 'votersExpiryExpert', $votersExpiryExpert, true);
-		add_post_meta($post_id, 'votersExpirySub', $votersExpirySub, true);
-
 		$dailyTotalAdmin = 0;
 		$dailyTotalExpert = 0;
 		$dailyTotalSub = 0;
@@ -429,15 +363,7 @@ function notlogged_form() {
 
 function house_form($amount, $UID, $suffix, $tid) {
 	$votersMetaName = 'voters' . $suffix;
-	$votersExpiryMetaName = 'votersExpiry' . $suffix;
 	$vote = get_post_meta($tid, $votersMetaName, true);
-	$voteExp = get_post_meta($tid, $votersExpiryMetaName, true);
-
-	if(!empty($vote) && array_key_exists($UID, $vote)) {
-		$current = 'Your current forecast: ' . $vote[$UID] . '<br> Days to expiry: ' . $voteExp[$UID];
-	} else {
-		$current = 'You do not currently have a forecast.';
-	}
 
 	echo 
 	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
@@ -467,11 +393,11 @@ function house_form($amount, $UID, $suffix, $tid) {
    		<option value="10">10%</option>
    		<option value="5">5%</option>
    		<option value="0">0%</option>
+   		<option value="-1">Delete</option>
    	</select>
    		<input type="submit" name="submit" value="Submit" class="forecastFormButton"/>
    		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
     </form>
-    <p class="voteInstr">' . $current . '</p>
     </div>';
 }
 
@@ -496,11 +422,11 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	$votersMetaName = 'voters' . $suffix;
 	$dailyTotalMetaName = 'dailyTotal' . $suffix;
 	$runningAverageMetaName = 'runningAverage' . $suffix;
-	$votersExpiryMetaName = 'votersExpiry' . $suffix;
 	$new_vote = intval(stripslashes( $amount ));
 
+	echo $new_vote;
+
 	$voters = get_post_meta($tid, $votersMetaName, true);
-	$votersExpiry = get_post_meta($tid, $votersExpiryMetaName, true);
 	$dailyTotal = intval(get_post_meta($tid, $dailyTotalMetaName, true));
 	
 	if(array_key_exists($UID, $voters)) {
@@ -509,13 +435,11 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	} 
 
 	$voters[$UID] = $new_vote;
-	$votersExpiry[$UID] = 10;
 	$dailyTotal += $new_vote;
 
 	$runningAverage = $dailyTotal/count($voters);
 	
 	update_post_meta($tid, $votersMetaName, $voters);
-	update_post_meta($tid, $votersExpiryMetaName, $votersExpiry);
 	update_post_meta($tid, $dailyTotalMetaName, $dailyTotal);
 	update_post_meta($tid, $runningAverageMetaName, $runningAverage);
 
@@ -530,7 +454,7 @@ function custom_vote_function($tid, $user_level, $intime, $UID) {
 	global $amount;	
 
 	//three different sets of values, for 3 user levels
-	if($user_level > 2) {
+	if($user_level > 7) {
 		$suffix = 'Admin';
 	} elseif ($user_level > 0) {
 		$suffix = 'Expert';
