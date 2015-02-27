@@ -364,6 +364,7 @@ function notlogged_form() {
 function house_form($amount, $UID, $suffix, $tid) {
 	$votersMetaName = 'voters' . $suffix;
 	$vote = get_post_meta($tid, $votersMetaName, true);
+	$current = '';
 
 	if(!empty($vote) && array_key_exists($UID, $vote)) {
 		$current = 'Your current forecast: ' . $vote[$UID];
@@ -450,10 +451,12 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	$numVoters = count($voters);
 	if($numVoters > 0) {
 		$runningAverage = $dailyTotal/$numVoters;
+		update_post_meta($tid, $runningAverageMetaName, $runningAverage);
 	}
+
 	update_post_meta($tid, $votersMetaName, $voters);
 	update_post_meta($tid, $dailyTotalMetaName, $dailyTotal);
-	update_post_meta($tid, $runningAverageMetaName, $runningAverage);
+
 
 	$_POST['amount'] = '--';
 
