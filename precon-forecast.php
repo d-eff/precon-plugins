@@ -365,6 +365,10 @@ function house_form($amount, $UID, $suffix, $tid) {
 	$votersMetaName = 'voters' . $suffix;
 	$vote = get_post_meta($tid, $votersMetaName, true);
 
+	if(!empty($vote) && array_key_exists($UID, $vote)) {
+		$current = 'Your current forecast: ' . $vote[$UID];
+	}
+
 	echo 
 	'<div class="widgetWrap"><h4 class="widgetTitle">Forecasts</h4>
 	 <p class="voteInstr">Submit your forecast here. You can update your forecast during the day, and only your last submission will count for that day’s forecast.</p>
@@ -398,6 +402,7 @@ function house_form($amount, $UID, $suffix, $tid) {
    		<input type="submit" name="submit" value="Submit" class="forecastFormButton"/>
    		<input type="hidden" name="votenonce" value="' . wp_create_nonce( 'votin' ) . '" />
     </form>
+	<p class="voteInstr">' . $current . '</p>
     </div>';
 }
 
@@ -424,21 +429,28 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	$runningAverageMetaName = 'runningAverage' . $suffix;
 	$new_vote = intval(stripslashes( $amount ));
 
-	echo $new_vote;
-
 	$voters = get_post_meta($tid, $votersMetaName, true);
 	$dailyTotal = intval(get_post_meta($tid, $dailyTotalMetaName, true));
 	
 	if(array_key_exists($UID, $voters)) {
 		$old_vote = $voters[$UID];
 		$dailyTotal -= $old_vote;
+
+		//delete option passes -1
+		if($new_vote < 0) {
+			unset($voters[$UID]);
+		}
 	} 
 
-	$voters[$UID] = $new_vote;
-	$dailyTotal += $new_vote;
+	if($new_vote >= 0) {
+		$voters[$UID] = $new_vote;
+		$dailyTotal += $new_vote;
+	}
 
-	$runningAverage = $dailyTotal/count($voters);
-	
+	$numVoters = count($voters);
+	if($numVoters > 0) {
+		$runningAverage = $dailyTotal/$numVoters;
+	}
 	update_post_meta($tid, $votersMetaName, $voters);
 	update_post_meta($tid, $dailyTotalMetaName, $dailyTotal);
 	update_post_meta($tid, $runningAverageMetaName, $runningAverage);
