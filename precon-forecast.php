@@ -274,33 +274,23 @@ function precon_q_save_forecast( $post_id, $post ) {
 	//If we don't have a voters list, we can assume we're unitialized
 	if(empty($voters)){
 		//initialize post meta
-		$votersAdmin = array();
-		$votersExpert = array();
-		$votersSub = array();
-		add_post_meta($post_id, 'votersAdmin', $votersAdmin, true);
-		add_post_meta($post_id, 'votersExpert', $votersExpert, true);
-		add_post_meta($post_id, 'votersSub', $votersSub, true);
+		$voters = array();
 
-		$dailyTotalAdmin = 0;
-		$dailyTotalExpert = 0;
-		$dailyTotalSub = 0;
-		add_post_meta($post_id, 'dailyTotalAdmin', $dailyTotalAdmin, true);
-		add_post_meta($post_id, 'dailyTotalExpert', $dailyTotalExpert, true);
-		add_post_meta($post_id, 'dailyTotalSub', $dailyTotalSub, true);
+		add_post_meta($post_id, 'votersAdmin', $voters, true);
+		add_post_meta($post_id, 'votersExpert', $voters, true);
+		add_post_meta($post_id, 'votersSub', $voters, true);
 
-		$runningAverageAdmin = 0;
-		$runningAverageExpert = 0;
-		$runningAverageSub = 0;
-		add_post_meta($post_id, 'runningAverageAdmin', $runningAverageAdmin, true);
-		add_post_meta($post_id, 'runningAverageExpert', $runningAverageExpert, true);
-		add_post_meta($post_id, 'runningAverageSub', $runningAverageSub, true);
+		add_post_meta($post_id, 'historicalVotesAdmin', $voters, true);
+		add_post_meta($post_id, 'historicalVotesExpert', $voters, true);
+		add_post_meta($post_id, 'historicalVotesSub', $voters, true);
 
-		$historicalVotesAdmin = array();
-		$historicalVotesExpert = array();
-		$historicalVotesSub = array();
-		add_post_meta($post_id, 'historicalVotesAdmin', $historicalVotesAdmin, true);
-		add_post_meta($post_id, 'historicalVotesExpert', $historicalVotesExpert, true);
-		add_post_meta($post_id, 'historicalVotesSub', $historicalVotesSub, true);
+		add_post_meta($post_id, 'dailyTotalAdmin', 0, true);
+		add_post_meta($post_id, 'dailyTotalExpert', 0, true);
+		add_post_meta($post_id, 'dailyTotalSub', 0, true);
+
+		add_post_meta($post_id, 'runningAverageAdmin', 0, true);
+		add_post_meta($post_id, 'runningAverageExpert', 0, true);
+		add_post_meta($post_id, 'runningAverageSub', 0, true);
 
 		add_post_meta($post_id, 'currentDate', date('m/d/y', current_time('timestamp', $gmt = 0)), true);
 
@@ -432,6 +422,7 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 
 	$voters = get_post_meta($tid, $votersMetaName, true);
 	$dailyTotal = intval(get_post_meta($tid, $dailyTotalMetaName, true));
+	$runningAverage = 0;
 	
 	if(array_key_exists($UID, $voters)) {
 		$old_vote = $voters[$UID];
@@ -451,9 +442,8 @@ function complete_voting($amount, $tid, $suffix, $intime, $UID) {
 	$numVoters = count($voters);
 	if($numVoters > 0) {
 		$runningAverage = $dailyTotal/$numVoters;
-	} else {
-		$runningAverage = 0;
-	}
+	} 
+	
 	update_post_meta($tid, $runningAverageMetaName, $runningAverage);
 
 	update_post_meta($tid, $votersMetaName, $voters);
